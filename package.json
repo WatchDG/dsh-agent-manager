@@ -1,9 +1,9 @@
 {
   "name": "dsh-agent-manager",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Agent Manager for DeepSeek Harness: create, list, message, and interrupt sub-agents from the Web UI or with model-facing tools.",
+  "description": "Agent Manager for DeepSeek Harness: persistent agent definitions, spawn-by-task into any session, and live child management from the Web UI or model-facing tools.",
   "license": "Apache-2.0",
   "author": "Baranov Grigoriy Vladimirovich",
   "homepage": "https://github.com/WatchDG/dsh-agent-manager#readme",
@@ -48,7 +48,7 @@
   ],
   "scripts": {
     "test": "node --test",
-    "test:unit": "node --test test/manifest.test.mjs test/config.test.mjs test/agents.test.mjs test/tools.test.mjs test/command.test.mjs",
+    "test:unit": "node --test test/manifest.test.mjs test/config.test.mjs test/agents.test.mjs test/api.test.mjs test/tools.test.mjs test/command.test.mjs test/plugin.test.mjs",
     "test:integration": "node --test test/integration.test.mjs",
     "pack:check": "npm pack --dry-run"
   },

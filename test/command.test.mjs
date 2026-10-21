@@ -5,82 +5,76 @@ import { executeCommand, parseCommand, renderStatus, USAGE } from '../lib/comman
 
 const agent = { id: 'session-1' }
 
-test('parseCommand handles empty, create, provider flag, and usage', () => {
+test('parseCommand handles empty, run, session flag, and usage', () => {
   assert.deepEqual(parseCommand(''), { kind: 'status' })
   assert.deepEqual(parseCommand('  '), { kind: 'status' })
-  assert.deepEqual(parseCommand('create One | Do it'), {
-    kind: 'create',
-    description: 'One',
-    prompt: 'Do it',
+  assert.deepEqual(parseCommand('run reviewer | Review the PR'), {
+    kind: 'run',
+    agent: 'reviewer',
+    task: 'Review the PR',
   })
-  assert.deepEqual(parseCommand('create --provider=fork One | Do it'), {
-    kind: 'create',
-    description: 'One',
-    prompt: 'Do it',
-    provider: 'fork',
+  assert.deepEqual(parseCommand('run --session session-42 writer | Draft'), {
+    kind: 'run',
+    agent: 'writer',
+    task: 'Draft',
+    session: 'session-42',
   })
-  assert.equal(parseCommand('create One').kind, 'usage')
-  assert.equal(parseCommand('create |').kind, 'usage')
-  assert.equal(parseCommand('anything else').kind, 'usage')
-  assert.equal(parseCommand('create --provider=weird One | Do it').kind, 'usage')
+  assert.equal(parseCommand('run reviewer').kind, 'usage')
+  assert.equal(parseCommand('run |').kind, 'usage')
+  assert.equal(parseCommand('create x | y').kind, 'usage')
+  assert.equal(parseCommand('run --session').kind, 'usage')
 })
 
-test('renderStatus lists agents with team fallback note', () => {
+test('renderStatus lists definitions and spawned children', () => {
   const text = renderStatus({
-    agents: [
-      { id: 'c1', label: 'writer', mode: 'continuable', active: true },
-      { id: 'c2', label: null, mode: 'one-shot', active: false },
-    ],
-    total: 2,
+    definitions: [{ name: 'reviewer', provider: 'spawn', description: 'Reviews PRs' }],
+    agents: [{ id: 'c1', label: 'reviewer', mode: 'continuable', active: true }],
+    total: 1,
     truncated: false,
     team: null,
   })
-  assert.match(text, /writer \[running, continuable\] c1/)
-  assert.match(text, /c2 \[inactive, one-shot\]/)
-  assert.match(text, /Agent Teams runtime is not mounted/)
-
-  const teamText = renderStatus({ agents: [], total: 0, truncated: false, team: { members: [], tasks: [] } })
-  assert.match(teamText, /Agent Teams: 0 member\(s\)/)
+  assert.match(text, /Defined agents: 1/)
+  assert.match(text, /reviewer \[spawn\] — Reviews PRs/)
+  assert.match(text, /Spawned children: 1/)
+  assert.match(text, /reviewer \[running, continuable\] c1/)
 })
 
 test('executeCommand shows status for empty input', async () => {
   const manager = {
     overview: async () => ({ agents: [], total: 0, truncated: false, team: null }),
+    listAgents: () => ({ agents: [] }),
   }
-  const result = await executeCommand({ manager, getSettings: () => ({ memberProvider: 'spawn' }) }, { agent, rawInput: '' })
+  const result = await executeCommand({ manager }, { agent, rawInput: '' })
   assert.equal(result.kind, 'success')
-  assert.match(result.text, /Managed agents: 0/)
+  assert.match(result.text, /Defined agents: 0/)
 })
 
-test('executeCommand creates an agent through the manager', async () => {
+test('executeCommand spawns a defined agent through the manager', async () => {
   const calls = []
   const manager = {
-    create: async (request) => {
+    spawn: async (request) => {
       calls.push(request)
-      return { childId: 'child-9', provider: 'spawn', description: 'One', label: 'One' }
+      return { childId: 'child-9', name: 'reviewer', provider: 'spawn' }
     },
   }
-  const result = await executeCommand(
-    { manager, getSettings: () => ({ memberProvider: 'spawn' }) },
-    { agent, rawInput: 'create One | Do something' },
-  )
+  const result = await executeCommand({ manager }, { agent, rawInput: 'run reviewer | Do it' })
   assert.equal(result.kind, 'success')
   assert.match(result.text, /child-9/)
   assert.equal(calls[0].sessionId, agent.id)
-  assert.equal(calls[0].provider, 'spawn')
+  assert.equal(calls[0].agentId, 'reviewer')
 })
 
 test('executeCommand returns usage for malformed input and errors for failures', async () => {
   const manager = {}
-  const bad = await executeCommand({ manager, getSettings: () => ({ memberProvider: 'spawn' }) }, { agent, rawInput: 'nope' })
+  const bad = await executeCommand({ manager }, { agent, rawInput: 'nope' })
   assert.equal(bad.kind, 'error')
   assert.match(bad.text, /Usage/)
 
   const failing = await executeCommand(
-    { manager: { create: async () => { throw new Error('session is not live') } }, getSettings: () => ({ memberProvider: 'fork' }) },
-    { agent, rawInput: 'create One | Do it' },
+    { manager: { spawn: async () => { throw new Error('agent not defined') } } },
+    { agent, rawInput: 'run x | Do it' },
   )
   assert.equal(failing.kind, 'error')
-  assert.match(failing.text, /session is not live/)
+  assert.match(failing.text, /agent not defined/)
   assert.match(USAGE, /agent-manager/)
 })

@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0] — 2026-10-21
+
+- **Persistent agent definitions**: Settings → Agents keeps a durable,
+  profile-global registry of agents (name, description, base prompt, backend)
+  in `<workspace>/.agent-manager/state.json`.
+- **Settings list is primary**: the agent list loads first; “Create agent”
+  opens an inline form from the list; each row has Edit/Delete.
+- **Spawn by task**: `agent_manager_spawn`, `/agent-manager run <agent> | <task>`,
+  and the spawn block in Settings run a defined agent into any live session
+  (base prompt + task in a new continuable child).
+- Header panel now manages spawned children only (list, message, interrupt).
+- New Host routes: `GET /agents/list`, `POST /agents/save`,
+  `POST /agents/delete-agent`, `POST /agents/spawn`.
+
 ## [0.1.1] — 2026-10-21
 
 - **Settings → Agents** now includes an agent creation/management block: pick

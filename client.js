@@ -14,7 +14,10 @@ window.__ModuleLoader__.load({
     /** Authenticated Host routes registered by lib/plugin.js. */
     const OVERVIEW_PATH = '/agents/overview'
     const SESSIONS_PATH = '/agents/sessions'
-    const CREATE_PATH = '/agents/create'
+    const LIST_PATH = '/agents/list'
+    const SAVE_PATH = '/agents/save'
+    const DELETE_AGENT_PATH = '/agents/delete-agent'
+    const SPAWN_PATH = '/agents/spawn'
     const MESSAGE_PATH = '/agents/message'
     const INTERRUPT_PATH = '/agents/interrupt'
 
@@ -23,58 +26,63 @@ window.__ModuleLoader__.load({
       nav: 'Agents',
       title: 'Agent Manager',
       intro:
-        'Manage the sub-agents of your sessions: create continuable agents, list them with live status, send follow-up messages, and interrupt running turns. The Agent Teams roster and task board are included when the Host team runtime is mounted.',
-      loading: 'Loading agents…',
-      loadFailed: 'Could not load the agent list right now.',
-      unavailable: 'The agent manager service is unavailable in this profile.',
-      empty: 'No agents created under this session yet. Use the form below to create one.',
-      members: 'Managed agents',
-      tasks: 'Shared team tasks',
-      noTasks: 'No shared tasks.',
+        'Define persistent agents here once — name, description, base prompt, backend — then spawn them into any session with a concrete task from the conversation or this page.',
+      loading: 'Loading…',
+      loadFailed: 'Could not load data right now.',
+      definitions: 'Agents',
+      noDefinitions: 'No agents yet. Click “Create agent” to add the first one.',
       createTitle: 'Create agent',
+      editTitle: 'Edit agent',
+      createAgent: 'Create agent',
       nameLabel: 'Name',
-      nameHint: 'Short human-readable label (up to 80 characters).',
+      nameHint: 'Unique, readable name (up to 80 characters).',
       descLabel: 'Description',
       descHint: 'One line about the delegated responsibility (up to 200 characters).',
-      promptLabel: 'Initial prompt',
-      promptHint: 'Complete self-contained task for the new agent.',
+      promptLabel: 'Base prompt',
+      promptHint: 'The agent’s standing instructions; the task is appended when spawning.',
       providerLabel: 'Backend',
-      providerHint: 'spawn starts a fresh context; fork inherits this session’s completed turns.',
+      providerHint: 'spawn starts a fresh context; fork inherits the session’s completed turns.',
       spawnOption: 'Spawn (fresh context)',
-      forkOption: 'Fork (inherit this chat)',
-      createButton: 'Create agent',
-      creating: 'Creating…',
-      created: 'Agent created.',
-      createFailed: 'Creation failed.',
-      messagePlaceholder: 'Message to this agent…',
-      send: 'Send',
-      sending: 'Sending…',
-      sent: 'Sent.',
-      sendFailed: 'Could not send.',
-      interrupt: 'Interrupt',
-      interrupting: 'Interrupting…',
-      interrupted: 'Interrupt requested.',
-      interruptFailed: 'Could not interrupt.',
-      refresh: 'Refresh',
-      copyId: 'Copy session id',
-      copied: 'Copied.',
+      forkOption: 'Fork (inherit the chat)',
+      saveButton: 'Save agent',
+      deleteButton: 'Delete',
+      confirmDelete: 'Click again to delete',
+      cancel: 'Cancel',
+      saving: 'Saving…',
+      saved: 'Saved.',
+      saveFailed: 'Could not save.',
+      deleteFailed: 'Could not delete.',
+      spawnTitle: 'Spawn into a session',
+      taskLabel: 'Task',
+      taskHint: 'The concrete task for this run; appended to the agent’s base prompt.',
+      sessionLabel: 'Target session',
+      noSessions: 'No live sessions available — open one first, or spawn from a conversation with agent_manager_spawn.',
+      spawnButton: 'Spawn agent',
+      spawning: 'Spawning…',
+      spawned: 'Agent spawned.',
+      spawnFailed: 'Could not spawn.',
+      members: 'Spawned children',
+      empty: 'No children spawned in the selected session yet.',
       running: 'running',
       inactive: 'inactive',
       mode_oneShot: 'one-shot',
       modeExternal: 'external',
       modeContinuable: 'continuable',
       modeUnknown: 'unknown',
-      status: 'Status',
-      roleLead: 'lead',
-      roleTeammate: 'teammate',
+      edit: 'Edit',
       close: 'Close',
+      send: 'Send',
+      sending: 'Sending…',
+      sent: 'Sent.',
+      sendFailed: 'Could not send.',
+      interrupt: 'Interrupt',
+      copyId: 'Copy session id',
+      copied: 'Copied.',
+      messagePlaceholder: 'Message to this agent…',
       headerActionLabel: 'Conversation header action',
       headerActionHint: 'Show the “Agents” action in an open conversation header.',
       refreshLabel: 'Auto-refresh (ms)',
       refreshHint: 'Panel refresh interval, from 1000 through 60000 ms.',
-      sessionsLabel: 'Session',
-      sessionsHint: 'The agent will be created under this live session.',
-      noSessions: 'No live sessions available — open one first.',
     }
 
     /** Russian copy. */
@@ -82,58 +90,63 @@ window.__ModuleLoader__.load({
       nav: 'Агенты',
       title: 'Менеджер агентов',
       intro:
-        'Управляйте субагентами своих сессий: создавайте продолжаемых агентов, просматривайте их со статусом, отправляйте уточняющие сообщения и прерывайте запущенные ходы. Состав команды и доска задач Agent Teams включаются, когда рантайм команд смонтирован на хосте.',
-      loading: 'Загружаю агентов…',
-      loadFailed: 'Не удалось загрузить список агентов.',
-      unavailable: 'Сервис менеджера агентов недоступен в этом профиле.',
-      empty: 'Под этой сессией ещё нет агентов. Воспользуйтесь формой ниже, чтобы создать первого.',
-      members: 'Управляемые агенты',
-      tasks: 'Общие задачи команды',
-      noTasks: 'Общих задач нет.',
+        'Определите персистентных агентов один раз — имя, описание, базовый промпт, бэкенд — и затем спавните их в любую сессию с конкретной задачей из беседы или этой страницы.',
+      loading: 'Загружаю…',
+      loadFailed: 'Не удалось загрузить данные.',
+      definitions: 'Агенты',
+      noDefinitions: 'Агентов пока нет. Нажмите «Создать агента», чтобы добавить первого.',
       createTitle: 'Создать агента',
+      editTitle: 'Изменить агента',
+      createAgent: 'Создать агента',
       nameLabel: 'Имя',
-      nameHint: 'Короткая понятная метка (до 80 символов).',
+      nameHint: 'Уникальное понятное имя (до 80 символов).',
       descLabel: 'Описание',
       descHint: 'Одна строка о делегированной ответственности (до 200 символов).',
-      promptLabel: 'Начальный промпт',
-      promptHint: 'Полная самостоятельная задача для нового агента.',
+      promptLabel: 'Базовый промпт',
+      promptHint: 'Постоянные инструкции агента; задача добавляется при спавне.',
       providerLabel: 'Бэкенд',
-      providerHint: 'spawn начинает с чистого контекста; fork наследует завершённые ходы этой сессии.',
+      providerHint: 'spawn начинает с чистого контекста; fork наследует завершённые ходы сессии.',
       spawnOption: 'Spawn (чистый контекст)',
       forkOption: 'Fork (унаследовать чат)',
-      createButton: 'Создать агента',
-      creating: 'Создаю…',
-      created: 'Агент создан.',
-      createFailed: 'Не удалось создать.',
-      messagePlaceholder: 'Сообщение агенту…',
-      send: 'Отправить',
-      sending: 'Отправляю…',
-      sent: 'Отправлено.',
-      sendFailed: 'Не удалось отправить.',
-      interrupt: 'Прервать',
-      interrupting: 'Прерываю…',
-      interrupted: 'Прерывание запрошено.',
-      interruptFailed: 'Не удалось прервать.',
-      refresh: 'Обновить',
-      copyId: 'Скопировать id сессии',
-      copied: 'Скопировано.',
+      saveButton: 'Сохранить агента',
+      deleteButton: 'Удалить',
+      confirmDelete: 'Нажмите ещё раз для удаления',
+      cancel: 'Отмена',
+      saving: 'Сохраняю…',
+      saved: 'Сохранено.',
+      saveFailed: 'Не удалось сохранить.',
+      deleteFailed: 'Не удалось удалить.',
+      spawnTitle: 'Спавн в сессию',
+      taskLabel: 'Задача',
+      taskHint: 'Конкретная задача для запуска; добавляется к базовому промпту агента.',
+      sessionLabel: 'Целевая сессия',
+      noSessions: 'Нет живых сессий — сначала откройте одну или используйте agent_manager_spawn из беседы.',
+      spawnButton: 'Спавнить агента',
+      spawning: 'Спавню…',
+      spawned: 'Агент создан.',
+      spawnFailed: 'Не удалось создать.',
+      members: 'Спавненные дети',
+      empty: 'В выбранной сессии ещё нет детей.',
       running: 'работает',
       inactive: 'неактивен',
       mode_oneShot: 'одноразовый',
       modeExternal: 'внешний',
       modeContinuable: 'продолжаемый',
       modeUnknown: 'неизвестный',
-      status: 'Статус',
-      roleLead: 'лидер',
-      roleTeammate: 'участник',
+      edit: 'Изменить',
       close: 'Закрыть',
+      send: 'Отправить',
+      sending: 'Отправляю…',
+      sent: 'Отправлено.',
+      sendFailed: 'Не удалось отправить.',
+      interrupt: 'Прервать',
+      copyId: 'Скопировать id сессии',
+      copied: 'Скопировано.',
+      messagePlaceholder: 'Сообщение агенту…',
       headerActionLabel: 'Действие в шапке беседы',
       headerActionHint: 'Показывать кнопку «Агенты» в шапке открытой беседы.',
       refreshLabel: 'Автообновление (мс)',
       refreshHint: 'Интервал обновления панели, от 1000 до 60000 мс.',
-      sessionsLabel: 'Сессия',
-      sessionsHint: 'Агент будет создан под этой живой сессией.',
-      noSessions: 'Нет живых сессий — сначала откройте одну.',
     }
 
     /** Panel styles; theme tokens only, so light/dark follows the host theme. */
@@ -142,7 +155,6 @@ window.__ModuleLoader__.load({
 .am-title{margin:0;font-size:16px;font-weight:600}
 .am-sub{margin:24px 0 0;padding-top:16px;border-top:.5px solid var(--dsw-alias-border-l1);font-size:16px;font-weight:600}
 .am-intro{margin:0;color:var(--dsw-alias-label-secondary);font-size:13px;line-height:19px}
-.am-card{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:.5px solid var(--dsw-alias-border-l1);border-radius:8px;background:var(--dsw-alias-bg-layer-1);font-size:12px;line-height:18px}
 .am-status{color:var(--dsw-alias-label-secondary)}
 .am-error{color:var(--dsw-alias-state-error-primary)}
 .am-row{display:flex;flex-direction:column;gap:6px}
@@ -156,6 +168,7 @@ window.__ModuleLoader__.load({
 .am-button{height:32px;padding:0 12px;border:.5px solid var(--dsw-alias-border-l2);border-radius:6px;background:var(--dsw-alias-bg-layer-1);color:inherit;font:inherit;cursor:pointer}
 .am-button:disabled{color:var(--dsw-alias-label-secondary);cursor:not-allowed}
 .am-button.danger{border-color:var(--dsw-alias-state-error-primary);color:var(--dsw-alias-state-error-primary)}
+.am-headRow{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .am-root{position:relative}
 .am-trigger{min-height:28px;color:var(--dsw-alias-label-tertiary);cursor:pointer;background:transparent;border:0;border-radius:6px;display:inline-flex;align-items:center;gap:5px;padding:3px 7px;font-size:12px}
 .am-trigger:hover,.am-trigger:focus-visible{color:var(--dsw-alias-label-primary)}
@@ -169,13 +182,12 @@ window.__ModuleLoader__.load({
 .am-dot.running{background:var(--dsw-alias-state-success-primary)}
 .am-dot.inactive{background:var(--dsw-alias-label-tertiary)}
 .am-agentName{font-size:13px;font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.am-agentMeta{color:var(--dsw-alias-label-secondary);font-size:11px;line-height:16px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.am-agentMeta{color:var(--dsw-alias-label-secondary);font-size:11px;line-height:16px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;overflow-wrap:anywhere}
+.am-prompt{font-size:12px;line-height:18px;color:var(--dsw-alias-label-primary);white-space:pre-wrap;overflow-wrap:anywhere;max-height:96px;overflow:auto}
 .am-agentRow{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.am-formCard{display:flex;flex-direction:column;gap:12px;padding:12px;border:.5px solid var(--dsw-alias-border-l1);border-radius:8px;background:var(--dsw-alias-bg-layer-1)}
 .am-send{display:flex;flex-direction:column;gap:6px}
 .am-empty{color:var(--dsw-alias-label-secondary);font-size:12px;line-height:18px;padding:4px 0}
-.am-teamCard{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:8px 10px;border:.5px solid var(--dsw-alias-border-l1);border-radius:8px;background:var(--dsw-alias-bg-layer-1);font-size:12px;line-height:18px}
-.am-task{display:flex;flex-direction:column;gap:2px;padding:6px 8px;border:.5px solid var(--dsw-alias-border-l2);border-radius:6px}
-.am-taskTitle{font-weight:600;font-size:12px}
 `
 
     /** Fetch JSON from an authenticated Host route. */
@@ -185,8 +197,14 @@ window.__ModuleLoader__.load({
         headers: { accept: 'application/json' },
         cache: 'no-store',
       })
-      if (!response.ok) throw new Error(`agent-manager: HTTP ${response.status}`)
-      return response.json()
+      let payload
+      try {
+        payload = await response.json()
+      } catch {
+        throw new Error(`agent-manager: HTTP ${response.status}`)
+      }
+      if (!response.ok || !payload.ok) throw new Error(payload.error ?? `agent-manager: HTTP ${response.status}`)
+      return payload
     }
 
     /** POST JSON to an authenticated Host route. */
@@ -197,8 +215,14 @@ window.__ModuleLoader__.load({
         cache: 'no-store',
         body: JSON.stringify(body),
       })
-      if (!response.ok) throw new Error(`agent-manager: HTTP ${response.status}`)
-      return response.json()
+      let payload
+      try {
+        payload = await response.json()
+      } catch {
+        throw new Error(`agent-manager: HTTP ${response.status}`)
+      }
+      if (!response.ok || !payload.ok) throw new Error(payload.error ?? `agent-manager: HTTP ${response.status}`)
+      return payload
     }
 
     /** Copy text, with a legacy fallback for older WebViews. */
@@ -237,18 +261,16 @@ window.__ModuleLoader__.load({
     }
 
     /**
-     * The conversation-header “Agents” action: a trigger button and a panel
-     * listing managed agents with create/message/interrupt controls.
+     * The conversation-header “Agents” action: spawned children of this
+     * session with message/interrupt controls. Agent creation lives in
+     * Settings (persistent definitions); this panel manages the children.
      */
     function AgentsAction(props) {
       const t = typeof props.t === 'function' ? props.t : (key) => en[key] ?? key
       const sessionId = props.sessionId
       const enabled = props.enabled !== false
-      const refreshMs = props.refreshMs ?? 5000
       const [open, setOpen] = React.useState(false)
       const [state, setState] = React.useState({ status: 'idle', payload: null })
-      const [create, setCreate] = React.useState({ open: false, pending: false, done: false })
-      const [form, setForm] = React.useState({ name: '', description: '', prompt: '', provider: 'spawn' })
       const [mail, setMail] = React.useState({})
       const [busy, setBusy] = React.useState({})
       const rootRef = React.useRef(null)
@@ -257,19 +279,16 @@ window.__ModuleLoader__.load({
         if (!sessionId) return
         setState((previous) => ({ ...previous, status: previous.status === 'ready' ? 'ready' : 'loading' }))
         getJson(OVERVIEW_PATH, `session=${encodeURIComponent(sessionId)}`)
-          .then((response) => {
-            if (!response.ok) throw new Error(response.error ?? 'overview failed')
-            setState({ status: 'ready', payload: response.data })
-          })
+          .then((response) => setState({ status: 'ready', payload: response.data }))
           .catch(() => setState({ status: 'failed', payload: null }))
       }, [sessionId])
 
       React.useEffect(() => {
         if (!open || !enabled) return
         load()
-        const timer = setInterval(load, refreshMs)
+        const timer = setInterval(load, 5000)
         return () => clearInterval(timer)
-      }, [open, enabled, refreshMs, load])
+      }, [open, enabled, load])
 
       React.useEffect(() => {
         if (!open) return
@@ -289,29 +308,13 @@ window.__ModuleLoader__.load({
 
       if (!sessionId || !enabled) return null
 
-      const doCreate = () => {
-        if (create.pending) return
-        setCreate({ open: true, pending: true, done: false })
-        postJson(CREATE_PATH, { session: sessionId, ...form })
-          .then((response) => {
-            if (!response.ok) throw new Error(response.error ?? 'create failed')
-            setCreate({ open: false, pending: false, done: true })
-            setForm({ name: '', description: '', prompt: '', provider: 'spawn' })
-            load()
-          })
-          .catch(() => setCreate({ open: true, pending: false, done: false }))
-      }
-
       const doSend = (agentId) => {
         if (busy[agentId]) return
         const message = (mail[agentId] ?? '').trim()
         if (!message) return
         setBusy((previous) => ({ ...previous, [agentId]: true }))
         postJson(MESSAGE_PATH, { session: sessionId, target: agentId, message })
-          .then((response) => {
-            if (!response.ok) throw new Error(response.error ?? 'send failed')
-            setMail((previous) => ({ ...previous, [agentId]: '' }))
-          })
+          .then(() => setMail((previous) => ({ ...previous, [agentId]: '' })))
           .catch(() => undefined)
           .finally(() => setBusy((previous) => ({ ...previous, [agentId]: false })))
       }
@@ -320,18 +323,11 @@ window.__ModuleLoader__.load({
         if (busy[agentId]) return
         setBusy((previous) => ({ ...previous, [agentId]: true }))
         postJson(INTERRUPT_PATH, { session: sessionId, target: agentId })
-          .then((response) => {
-            if (!response.ok) throw new Error(response.error ?? 'interrupt failed')
-          })
           .catch(() => undefined)
           .finally(() => setBusy((previous) => ({ ...previous, [agentId]: false })))
       }
 
       const agents = state.status === 'ready' && state.payload ? state.payload.agents ?? [] : []
-      const team = state.status === 'ready' && state.payload ? state.payload.team : null
-
-      const section = (title, children) =>
-        h('section', { className: 'am-section-inline', style: { marginTop: 10 } }, h('h3', { className: 'am-sub' }, title), children)
 
       const body = h(
         'div',
@@ -418,49 +414,6 @@ window.__ModuleLoader__.load({
                         ),
                       ),
                     ),
-                team && team.members.length > 0
-                  ? section(
-                      t('members'),
-                      h(
-                        'div',
-                        { className: 'am-list' },
-                        team.members.map((member) =>
-                          h(
-                            'div',
-                            { className: 'am-agent', key: member.name },
-                            h(
-                              'div',
-                              { className: 'am-agentHead' },
-                              h('span', { className: `am-dot ${member.status === 'running' || member.status === 'provisioning' ? 'running' : 'inactive'}` }),
-                              h('span', { className: 'am-agentName' }, member.name),
-                            ),
-                            h(
-                              'div',
-                              { className: 'am-agentMeta' },
-                              `${t(member.role === 'lead' ? 'roleLead' : 'roleTeammate')} · ${t(member.status === 'running' ? 'running' : 'inactive')}`,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  : null,
-                team && team.tasks.length > 0
-                  ? section(
-                      t('tasks'),
-                      h(
-                        'div',
-                        { className: 'am-teamCard' },
-                        team.tasks.map((task) =>
-                          h(
-                            'div',
-                            { className: 'am-task', key: task.id },
-                            h('span', { className: 'am-taskTitle' }, task.subject),
-                            h('span', { className: 'am-agentMeta' }, `${task.id} · ${task.status} · ${task.ownerName ?? 'unowned'}`),
-                          ),
-                        ),
-                      ),
-                    )
-                  : null,
               ),
       )
 
@@ -491,102 +444,176 @@ window.__ModuleLoader__.load({
     }
 
     /**
-     * The Settings → Agents management block: pick a live session, create an
-     * agent under it with its own prompt, and see the session's managed
-     * agents. This is the same manager facade the header panel uses.
+     * The Settings → Agents block. The agent list is primary: it loads
+     * first, and creating/editing opens an inline form from the list.
+     * A separate block spawns a defined agent into a chosen session.
      */
     function ManageBlock(props) {
       const t = props.t
+      const [defs, setDefs] = React.useState(null)
+      const [defsError, setDefsError] = React.useState('')
       const [sessions, setSessions] = React.useState(null)
-      const [selected, setSelected] = React.useState('')
+      const [sessionsError, setSessionsError] = React.useState('')
+      const [selectedSession, setSelectedSession] = React.useState('')
+      const [creating, setCreating] = React.useState(false)
+      const [editingId, setEditingId] = React.useState(null)
+      const [form, setForm] = React.useState({ id: null, name: '', description: '', prompt: '', provider: 'spawn' })
+      const [saving, setSaving] = React.useState(false)
+      const [formNotice, setFormNotice] = React.useState('')
+      const [confirmDelete, setConfirmDelete] = React.useState(null)
+      const [spawn, setSpawn] = React.useState({ agentId: '', task: '' })
+      const [spawning, setSpawning] = React.useState(false)
+      const [spawnNotice, setSpawnNotice] = React.useState('')
       const [overview, setOverview] = React.useState(null)
-      const [form, setForm] = React.useState({ name: '', description: '', prompt: '', provider: 'spawn' })
-      const [busy, setBusy] = React.useState(false)
-      const [notice, setNotice] = React.useState('')
+      const [overviewError, setOverviewError] = React.useState('')
 
-      React.useEffect(() => {
-        let alive = true
-        getJson(SESSIONS_PATH)
+      const reloadDefs = React.useCallback(() => {
+        getJson(LIST_PATH)
           .then((response) => {
-            if (!alive) return
-            if (!response.ok) throw new Error(response.error ?? 'sessions failed')
-            const list = response.data.sessions ?? []
-            setSessions(list)
-            if (list.length > 0) setSelected((current) => current || list[0].id)
+            setDefs(response.data.agents)
+            setDefsError('')
           })
-          .catch(() => {
-            if (alive) setSessions([])
+          .catch((error) => {
+            setDefs([])
+            setDefsError(error instanceof Error ? error.message : String(error))
           })
-        return () => {
-          alive = false
-        }
       }, [])
 
       React.useEffect(() => {
-        if (!selected) {
+        reloadDefs()
+        getJson(SESSIONS_PATH)
+          .then((response) => {
+            const list = response.data.sessions ?? []
+            setSessionsError('')
+            setSessions(list)
+            if (list.length > 0) setSelectedSession((current) => current || list[0].id)
+          })
+          .catch((error) => {
+            setSessions([])
+            setSessionsError(error instanceof Error ? error.message : String(error))
+          })
+      }, [reloadDefs])
+
+      React.useEffect(() => {
+        if (!selectedSession) {
           setOverview(null)
           return
         }
         let alive = true
-        getJson(OVERVIEW_PATH, `session=${encodeURIComponent(selected)}`)
+        getJson(OVERVIEW_PATH, `session=${encodeURIComponent(selectedSession)}`)
           .then((response) => {
-            if (alive && response.ok) setOverview(response.data)
+            if (alive) {
+              setOverview(response.data)
+              setOverviewError('')
+            }
           })
-          .catch(() => {
-            if (alive) setOverview(null)
+          .catch((error) => {
+            if (alive) {
+              setOverview(null)
+              setOverviewError(error instanceof Error ? error.message : String(error))
+            }
           })
         return () => {
           alive = false
         }
-      }, [selected])
+      }, [selectedSession])
 
-      const doCreate = () => {
-        if (busy || !selected) return
-        setBusy(true)
-        setNotice('')
-        postJson(CREATE_PATH, { session: selected, ...form })
-          .then((response) => {
-            if (!response.ok) throw new Error(response.error ?? 'create failed')
-            setNotice(t('created'))
-            setForm({ name: '', description: '', prompt: '', provider: 'spawn' })
-            return getJson(OVERVIEW_PATH, `session=${encodeURIComponent(selected)}`)
-          })
-          .then((response) => {
-            if (response && response.ok) setOverview(response.data)
-          })
-          .catch(() => setNotice(t('createFailed')))
-          .finally(() => setBusy(false))
+      const openCreate = () => {
+        setConfirmDelete(null)
+        setFormNotice('')
+        setEditingId(null)
+        setCreating(true)
+        setForm({ id: null, name: '', description: '', prompt: '', provider: 'spawn' })
       }
 
-      return h(
+      const openEdit = (agent) => {
+        setConfirmDelete(null)
+        setFormNotice('')
+        setCreating(false)
+        setEditingId(agent.id)
+        setForm({
+          id: agent.id,
+          name: agent.name,
+          description: agent.description,
+          prompt: agent.prompt,
+          provider: agent.provider,
+        })
+      }
+
+      const closeForm = () => {
+        setCreating(false)
+        setEditingId(null)
+        setFormNotice('')
+      }
+
+      const doSave = () => {
+        if (saving) return
+        setSaving(true)
+        setFormNotice('')
+        postJson(SAVE_PATH, {
+          id: form.id,
+          name: form.name,
+          description: form.description,
+          prompt: form.prompt,
+          provider: form.provider,
+        })
+          .then(() => {
+            setFormNotice(t('saved'))
+            closeForm()
+            reloadDefs()
+          })
+          .catch(() => setFormNotice(t('saveFailed')))
+          .finally(() => setSaving(false))
+      }
+
+      const doDelete = (id) => {
+        if (confirmDelete !== id) {
+          setConfirmDelete(id)
+          return
+        }
+        setConfirmDelete(null)
+        postJson(DELETE_AGENT_PATH, { id })
+          .then(() => {
+            if (editingId === id) closeForm()
+            reloadDefs()
+          })
+          .catch(() => undefined)
+      }
+
+      const doSpawn = () => {
+        if (spawning) return
+        setSpawning(true)
+        setSpawnNotice('')
+        postJson(SPAWN_PATH, {
+          session: selectedSession,
+          agentId: spawn.agentId,
+          task: spawn.task,
+        })
+          .then(() => {
+            setSpawnNotice(t('spawned'))
+            setSpawn((previous) => ({ ...previous, task: '' }))
+            if (selectedSession) {
+              getJson(OVERVIEW_PATH, `session=${encodeURIComponent(selectedSession)}`)
+                .then((response) => setOverview(response.data))
+                .catch(() => undefined)
+            }
+          })
+          .catch(() => setSpawnNotice(t('spawnFailed')))
+          .finally(() => setSpawning(false))
+      }
+
+      const formOpen = creating || editingId !== null
+      const formTitle = editingId !== null ? t('editTitle') : t('createTitle')
+
+      const agentForm = h(
         'div',
-        { className: 'am-management', style: { marginTop: 24 } },
-        h('h3', { className: 'am-sub' }, t('createTitle')),
+        { className: 'am-formCard' },
+        h('div', { className: 'am-agentHead' }, h('span', { className: 'am-agentName' }, formTitle)),
         h(
           Field,
-          { id: 'am-session', label: t('sessionsLabel'), hint: t('sessionsHint') },
-          sessions === null
-            ? h('div', { className: 'am-status' }, t('loading'))
-            : sessions.length === 0
-              ? h('div', { className: 'am-status' }, t('noSessions'))
-              : h(
-                  'select',
-                  {
-                    id: 'am-session',
-                    className: 'am-select',
-                    value: selected,
-                    onChange: (event) => setSelected(event.target.value),
-                  },
-                  sessions.map((session) =>
-                    h('option', { key: session.id, value: session.id }, `${session.id}${session.cwd ? ` · ${session.cwd}` : ''}`),
-                  ),
-                ),
-        ),
-        h(
-          Field,
-          { id: 'am-mg-name', label: t('nameLabel'), hint: t('nameHint') },
+          { id: 'am-def-name', label: t('nameLabel'), hint: t('nameHint') },
           h('input', {
-            id: 'am-mg-name',
+            id: 'am-def-name',
             className: 'am-input',
             value: form.name,
             onChange: (event) => setForm((previous) => ({ ...previous, name: event.target.value })),
@@ -594,9 +621,9 @@ window.__ModuleLoader__.load({
         ),
         h(
           Field,
-          { id: 'am-mg-desc', label: t('descLabel'), hint: t('descHint') },
+          { id: 'am-def-desc', label: t('descLabel'), hint: t('descHint') },
           h('input', {
-            id: 'am-mg-desc',
+            id: 'am-def-desc',
             className: 'am-input',
             value: form.description,
             onChange: (event) => setForm((previous) => ({ ...previous, description: event.target.value })),
@@ -604,9 +631,9 @@ window.__ModuleLoader__.load({
         ),
         h(
           Field,
-          { id: 'am-mg-prompt', label: t('promptLabel'), hint: t('promptHint') },
+          { id: 'am-def-prompt', label: t('promptLabel'), hint: t('promptHint') },
           h('textarea', {
-            id: 'am-mg-prompt',
+            id: 'am-def-prompt',
             className: 'am-textarea',
             value: form.prompt,
             onChange: (event) => setForm((previous) => ({ ...previous, prompt: event.target.value })),
@@ -614,11 +641,11 @@ window.__ModuleLoader__.load({
         ),
         h(
           Field,
-          { id: 'am-mg-provider', label: t('providerLabel'), hint: t('providerHint') },
+          { id: 'am-def-provider', label: t('providerLabel'), hint: t('providerHint') },
           h(
             'select',
             {
-              id: 'am-mg-provider',
+              id: 'am-def-provider',
               className: 'am-select',
               value: form.provider,
               onChange: (event) => setForm((previous) => ({ ...previous, provider: event.target.value })),
@@ -635,28 +662,167 @@ window.__ModuleLoader__.load({
             {
               type: 'button',
               className: 'am-button',
-              disabled: busy || !selected || !form.name.trim() || !form.description.trim() || !form.prompt.trim(),
-              onClick: doCreate,
+              disabled: saving || !form.name.trim() || !form.description.trim() || !form.prompt.trim(),
+              onClick: doSave,
             },
-            busy ? t('creating') : t('createButton'),
+            saving ? t('saving') : t('saveButton'),
+          ),
+          h(
+            'button',
+            { type: 'button', className: 'am-button', disabled: saving, onClick: closeForm },
+            t('cancel'),
           ),
         ),
-        notice
+        formNotice
           ? h(
               'div',
               {
-                className: notice === t('createFailed') ? 'am-error' : 'am-status',
-                role: notice === t('createFailed') ? 'alert' : 'status',
+                className: formNotice === t('saveFailed') ? 'am-error' : 'am-status',
+                role: formNotice === t('saveFailed') ? 'alert' : 'status',
               },
-              notice,
+              formNotice,
             )
           : null,
-        selected && overview
+      )
+
+      return h(
+        'div',
+        { className: 'am-management', style: { marginTop: 24 } },
+        h(
+          'div',
+          { className: 'am-headRow' },
+          h('h3', { className: 'am-sub', style: { marginTop: 0, paddingTop: 0, borderTop: 'none' } }, t('definitions')),
+          h(
+            'button',
+            { type: 'button', className: 'am-button', onClick: openCreate, disabled: creating || editingId !== null },
+            t('createAgent'),
+          ),
+        ),
+        defsError
+          ? h('div', { className: 'am-error', role: 'alert' }, defsError)
+          : defs === null
+            ? h('div', { className: 'am-status' }, t('loading'))
+            : defs.length === 0
+              ? h('div', { className: 'am-empty' }, t('noDefinitions'))
+              : h(
+                  'div',
+                  { className: 'am-list' },
+                  defs.map((agent) =>
+                    h(
+                      'div',
+                      { className: 'am-agent', key: agent.id },
+                      h(
+                        'div',
+                        { className: 'am-agentHead' },
+                        h('span', { className: 'am-agentName' }, agent.name),
+                      ),
+                      agent.description ? h('div', { className: 'am-agentMeta' }, agent.description) : null,
+                      h('div', { className: 'am-agentMeta' }, `[${agent.provider}] · ${agent.id}`),
+                      agent.prompt ? h('div', { className: 'am-prompt' }, agent.prompt) : null,
+                      h(
+                        'div',
+                        { className: 'am-agentRow' },
+                        h(
+                          'button',
+                          { type: 'button', className: 'am-button', onClick: () => openEdit(agent) },
+                          t('edit'),
+                        ),
+                        h(
+                          'button',
+                          {
+                            type: 'button',
+                            className: 'am-button danger',
+                            onClick: () => doDelete(agent.id),
+                          },
+                          confirmDelete === agent.id ? t('confirmDelete') : t('deleteButton'),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+        formOpen ? agentForm : null,
+        h('h3', { className: 'am-sub' }, t('spawnTitle')),
+        h(
+          Field,
+          { id: 'am-spawn-agent', label: t('definitions') },
+          defs === null || defs.length === 0
+            ? h('div', { className: 'am-status' }, t('noDefinitions'))
+            : h(
+                'select',
+                {
+                  id: 'am-spawn-agent',
+                  className: 'am-select',
+                  value: spawn.agentId,
+                  onChange: (event) => setSpawn((previous) => ({ ...previous, agentId: event.target.value })),
+                },
+                h('option', { value: '', disabled: true }, '—'),
+                defs.map((agent) => h('option', { key: agent.id, value: agent.id }, agent.name)),
+              ),
+        ),
+        h(
+          Field,
+          { id: 'am-spawn-session', label: t('sessionLabel') },
+          sessions === null
+            ? h('div', { className: 'am-status' }, t('loading'))
+            : sessionsError
+              ? h('div', { className: 'am-error', role: 'alert' }, sessionsError)
+              : sessions.length === 0
+                ? h('div', { className: 'am-status' }, t('noSessions'))
+                : h(
+                    'select',
+                    {
+                      id: 'am-spawn-session',
+                      className: 'am-select',
+                      value: selectedSession,
+                      onChange: (event) => setSelectedSession(event.target.value),
+                    },
+                    sessions.map((session) =>
+                      h('option', { key: session.id, value: session.id }, `${session.id}${session.cwd ? ` · ${session.cwd}` : ''}`),
+                    ),
+                  ),
+        ),
+        h(
+          Field,
+          { id: 'am-spawn-task', label: t('taskLabel'), hint: t('taskHint') },
+          h('textarea', {
+            id: 'am-spawn-task',
+            className: 'am-textarea',
+            value: spawn.task,
+            onChange: (event) => setSpawn((previous) => ({ ...previous, task: event.target.value })),
+          }),
+        ),
+        h(
+          'div',
+          { className: 'am-actions' },
+          h(
+            'button',
+            {
+              type: 'button',
+              className: 'am-button',
+              disabled: spawning || !spawn.agentId || !spawn.task.trim() || !selectedSession,
+              onClick: doSpawn,
+            },
+            spawning ? t('spawning') : t('spawnButton'),
+          ),
+        ),
+        spawnNotice
+          ? h(
+              'div',
+              {
+                className: spawnNotice === t('spawnFailed') ? 'am-error' : 'am-status',
+                role: spawnNotice === t('spawnFailed') ? 'alert' : 'status',
+              },
+              spawnNotice,
+            )
+          : null,
+        selectedSession && (overview || overviewError)
           ? h(
               'div',
               { style: { marginTop: 20 } },
-              h('h3', { className: 'am-sub' }, `${t('members')} · ${overview.total}`),
-              overview.agents.length === 0
+              overviewError
+                ? h('div', { className: 'am-error', role: 'alert' }, overviewError)
+                : h('h3', { className: 'am-sub' }, `${t('members')} · ${overview.total}`),
+              overview && overview.agents.length === 0
                 ? h('div', { className: 'am-empty' }, t('empty'))
                 : h(
                     'div',
@@ -669,7 +835,7 @@ window.__ModuleLoader__.load({
                           'div',
                           { className: 'am-agentHead' },
                           h('span', { className: `am-dot ${agent.active ? 'running' : 'inactive'}` }),
-                          h('span', { className: 'am-agentName' }, agent.label ?? agent.id),
+                          h('span', { className: 'am-agentName', title: agent.id }, agent.label ?? agent.id),
                         ),
                         h(
                           'div',
@@ -738,6 +904,7 @@ window.__ModuleLoader__.load({
         h('style', null, CSS),
         h('h2', { className: 'am-title' }, t('title')),
         h('p', { className: 'am-intro' }, t('intro')),
+        h(ManageBlock, { t }),
         h(
           Field,
           { id: 'am-provider', label: t('providerLabel'), hint: t('providerHint') },
@@ -787,13 +954,12 @@ window.__ModuleLoader__.load({
             },
           }),
         ),
-        h(ManageBlock, { t }),
         failed
-          ? h('div', { className: 'am-error', role: 'alert' }, t('createFailed'))
+          ? h('div', { className: 'am-error', role: 'alert' }, t('saveFailed'))
           : pending !== ''
-            ? h('div', { className: 'am-status', role: 'status' }, t('creating'))
+            ? h('div', { className: 'am-status', role: 'status' }, t('saving'))
             : saved
-              ? h('div', { className: 'am-status', role: 'status' }, t('created'))
+              ? h('div', { className: 'am-status', role: 'status' }, t('saved'))
               : null,
       )
     }
@@ -848,7 +1014,6 @@ window.__ModuleLoader__.load({
                 locale: NS,
                 inject: () => ({
                   t: (key) => t(key),
-                  refreshMs: undefined,
                   enabled: true,
                 }),
               },

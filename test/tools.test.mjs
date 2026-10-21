@@ -10,14 +10,14 @@ function jsonText(definition, value) {
   return definition.output.render({}, value)
 }
 
-test('buildManagerTools produces the four core definitions', () => {
+test('buildManagerTools produces the core definitions', () => {
   const tools = buildManagerTools({
     manager: {},
     settings: { maxList: () => 50, memberProvider: () => 'spawn' },
   })
   assert.deepEqual(
     tools.map((tool) => tool.name),
-    ['agent_manager_list', 'agent_manager_create', 'agent_manager_message', 'agent_manager_interrupt'],
+    ['agent_manager_list', 'agent_manager_spawn', 'agent_manager_message', 'agent_manager_interrupt'],
   )
   for (const tool of tools) {
     assert.equal(typeof tool.execute, 'function')
@@ -37,7 +37,7 @@ test('tools request the calling agent', async () => {
   }
 })
 
-test('agent_manager_list delegates to the manager overview with a default limit', async () => {
+test('agent_manager_list delegates to the manager overview with definitions', async () => {
   const calls = []
   const tools = buildManagerTools({
     manager: {
@@ -45,31 +45,32 @@ test('agent_manager_list delegates to the manager overview with a default limit'
         calls.push({ sessionId, options })
         return { agents: [], total: 0, truncated: false, team: null }
       },
+      listAgents: () => ({ agents: [{ id: 'a1', name: 'reviewer' }] }),
     },
     settings: { maxList: () => 42, memberProvider: () => 'spawn' },
   })
   const list = tools.find((tool) => tool.name === 'agent_manager_list')
   const value = await list.execute({}, exec)
   assert.deepEqual(calls, [{ sessionId: agent.id, options: { limit: 42 } }])
-  assert.deepEqual(value, { agents: [], total: 0, truncated: false, team: null })
-  assert.deepEqual(jsonText(list, value), [{ type: 'text', text: JSON.stringify(value) }])
+  assert.equal(value.agents.length, 1)
+  assert.equal(value.agents[0].id, 'a1')
 })
 
-test('agent_manager_create maps parameters to the manager facade', async () => {
+test('agent_manager_spawn maps parameters to the manager facade', async () => {
   const calls = []
   const tools = buildManagerTools({
     manager: {
-      create: async (request) => {
+      spawn: async (request) => {
         calls.push(request)
-        return { childId: 'child-1', label: 'x', description: 'd', provider: 'spawn' }
+        return { childId: 'child-1', agentId: 'reviewer', name: 'Reviewer', task: 't', provider: 'spawn' }
       },
     },
     settings: { maxList: () => 50, memberProvider: () => 'fork' },
   })
-  const create = tools.find((tool) => tool.name === 'agent_manager_create')
-  const value = await create.execute({ label: 'x', description: 'd', prompt: 'p' }, exec)
+  const spawn = tools.find((tool) => tool.name === 'agent_manager_spawn')
+  const value = await spawn.execute({ agent: 'reviewer', task: 't' }, exec)
   assert.equal(calls[0].sessionId, agent.id)
-  assert.equal(calls[0].provider, 'fork')
+  assert.equal(calls[0].agentId, 'reviewer')
   assert.equal(value.childId, 'child-1')
 })
 
@@ -92,6 +93,9 @@ test('agent_manager_message and interrupt pass the session and target', async ()
   const value = await message.execute({ agent_id: 'child-1', message: 'hi' }, exec)
   assert.equal(value.target, 'child-1')
   assert.deepEqual(calls[0][1], { sessionId: agent.id, target: 'child-1', message: 'hi' })
+
+  const spawn = tools.find((tool) => tool.name === 'agent_manager_spawn')
+  assert.equal(typeof spawn, 'object')
 
   const interrupt = tools.find((tool) => tool.name === 'agent_manager_interrupt')
   assert.deepEqual(await interrupt.execute({ agent_id: 'child-1' }, exec), { accepted: true })

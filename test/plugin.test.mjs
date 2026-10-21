@@ -41,7 +41,7 @@ test('mount registers the protocol section, tools, and command', () => {
   assert.equal(sections[0].order, 1010)
   assert.deepEqual(
     tools.map((tool) => tool.name),
-    ['agent_manager_list', 'agent_manager_create', 'agent_manager_message', 'agent_manager_interrupt'],
+    ['agent_manager_list', 'agent_manager_spawn', 'agent_manager_message', 'agent_manager_interrupt'],
   )
   assert.equal(commands.length, 1)
   assert.equal(commands[0].name, 'agent-manager')
@@ -69,7 +69,12 @@ test('route paths are stable and exported', () => {
   assert.deepEqual(ROUTES, {
     overview: '/agents/overview',
     sessions: '/agents/sessions',
-    create: '/agents/create',
+    list: '/agents/list',
+    save: '/agents/save',
+    deleteAgent: '/agents/delete-agent',
+    spawn: '/agents/spawn',
+    update: '/agents/update',
+    remove: '/agents/remove',
     message: '/agents/message',
     interrupt: '/agents/interrupt',
   })

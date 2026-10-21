@@ -19,20 +19,29 @@ for free.
 
 ## Features
 
+- **Persistent defined agents** — Settings → Agents keeps a durable registry
+  (profile-global, `<workspace>/.agent-manager/state.json`) of agent
+  definitions: name, description, base prompt, backend. Create, edit, and
+  delete them there; they survive restarts and are available to every
+  session.
+- **Spawn by task** — a defined agent is spawned into any session with a
+  concrete task (`agent_manager_spawn`, `/agent-manager run`, or the spawn
+  block in Settings). The child runs the base prompt plus the task in a new
+  continuable session.
 - **Web panel** — an “Agents” action in the conversation header lists the
-  session's managed agents with live status (running/inactive), lets you
-  create a new agent (name, description, initial prompt, spawn/fork), send a
-  follow-up message to any agent, interrupt a running one, and copy session
-  ids. The panel auto-refreshes while open and uses the host theme.
-- **Model-facing tools** — `agent_manager_list`, `agent_manager_create`,
+  session's spawned children with live status, lets you message and interrupt
+  them, and copy session ids.
+- **Model-facing tools** — `agent_manager_list`, `agent_manager_spawn`,
   `agent_manager_message`, `agent_manager_interrupt`, plus the
   `agent_manager_task_create/list/update` shared-board tools when the Agent
   Teams runtime is present. One operation, same behavior as the UI.
-- **Command** — `/agent-manager` for a text overview and quick creation.
+- **Command** — `/agent-manager` for status and `/agent-manager run <agent> | <task>`
+  to spawn a defined agent.
 - **Settings page** — Settings → Agents: backend default, list limit, header
   action visibility, auto-refresh interval, tool registration toggle — plus
-  an **agent creation/management block**: pick a live session, enter the new
-  agent's name/description/prompt, and see the session's managed agents.
+  the persistent definition registry and spawn block above.
+  and optionally steer new instructions), and **delete** it from the managed
+  list.
 - **Optional Agent Teams integration** — when `ctx.agentTeams` is mounted, the
   overview includes roster members (lead/teammate, status, model) and shared
   tasks; teammate names become valid message/interrupt targets from the Lead.
