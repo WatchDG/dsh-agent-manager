@@ -7,7 +7,9 @@ Thanks for considering a contribution to `dsh-agent-manager`.
 - Read the [README](README.md) to understand the bundle and its requirements.
 - The plugin targets [DeepSeek Harness](https://www.deepseek.com/en/harness/)
   0.2.x and relies on the Host `subagents`, `agents`, `tools`, `commands`,
-  `systemPrompt`, and `webServer` services.
+  `systemPrompt`, and `webServer` services. The `llm` and
+  `subagentModelSelection` services are optional: model discovery and the
+  distribution-model fallback degrade gracefully when they are absent.
 
 ## Development
 

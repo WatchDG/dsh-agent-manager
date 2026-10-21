@@ -6,13 +6,14 @@
  *
  * Contributions, all owned by this plugin's context:
  *
- * 1. **Tools** — `agent_manager_list`, `agent_manager_create`,
- *    `agent_manager_message`, `agent_manager_interrupt` (plus the
- *    `agent_manager_task_*` board when `ctx.agentTeams` is present). Every
- *    operation funnels through one manager facade shared with the UI.
- * 2. **Command** — `/agent-manager` for status and quick creation.
+ * 1. **Tools** — `agent_manager_list`, `agent_manager_spawn`,
+ *    `agent_manager_list_models`, `agent_manager_message`,
+ *    `agent_manager_interrupt` (plus the `agent_manager_task_*` board when
+ *    `ctx.agentTeams` is present). Every operation funnels through one manager
+ *    facade shared with the UI.
+ * 2. **Command** — `/agent-manager` for status and spawning a defined agent.
  * 3. **Web panel** — an “Agents” action in the conversation header that
- *    lists managed agents and lets you create, message, and interrupt them.
+ *    lists managed children and lets you message and interrupt them.
  *    The Host serves it over authenticated `/agents/*` routes.
  * 4. **Settings page** — the configuration below, editable live.
  *
@@ -20,6 +21,7 @@
  * Settings page thanks to volatile fields):
  *
  *   memberProvider  'spawn' | 'fork'   default backend for new agents
+ *   allowedModels   ModelRoute[]        coordinator distribution routes
  *   maxList         number              max child rows in listings
  *   headerAction     boolean             show the conversation-header action
  *   autoRefreshMs    number              panel auto-refresh interval

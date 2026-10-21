@@ -35,13 +35,19 @@ function fakeContext() {
 test('mount registers the protocol section, tools, and command', () => {
   const { ctx, sections, tools, commands, effects } = fakeContext()
   mount(ctx, {})
-  assert.equal(effects.length, 6) // section + 4 tools + command
+  assert.equal(effects.length, 7) // section + 5 tools + command
   assert.equal(sections.length, 1)
   assert.equal(sections[0].name, 'agent-manager:rules')
   assert.equal(sections[0].order, 1010)
   assert.deepEqual(
     tools.map((tool) => tool.name),
-    ['agent_manager_list', 'agent_manager_spawn', 'agent_manager_message', 'agent_manager_interrupt'],
+    [
+      'agent_manager_list',
+      'agent_manager_spawn',
+      'agent_manager_list_models',
+      'agent_manager_message',
+      'agent_manager_interrupt',
+    ],
   )
   assert.equal(commands.length, 1)
   assert.equal(commands[0].name, 'agent-manager')
@@ -70,6 +76,7 @@ test('route paths are stable and exported', () => {
     overview: '/agents/overview',
     sessions: '/agents/sessions',
     list: '/agents/list',
+    models: '/agents/models',
     save: '/agents/save',
     deleteAgent: '/agents/delete-agent',
     spawn: '/agents/spawn',

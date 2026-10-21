@@ -4,6 +4,9 @@
 #   - id: agent-manager
 #     config:
 #       memberProvider: fork       # spawn (default) | fork
+#       allowedModels:             # empty: Host subagent-model-selection, then session model
+#         - provider: openai
+#           model: gpt-5
 #       maxList: 50
 #       headerAction: true         # conversation-header "Agents" action
 #       autoRefreshMs: 5000

@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.3.0] — 2026-10-21
+
+- **Per-agent model selection.** Each persistent definition now carries a model
+  mode: `inherit` (use the spawning session’s model), `auto` (the coordinator
+  chooses an exact route at spawn time), or `fixed` (always use the definition’s
+  own provider/model). A fixed agent ignores the coordinator’s route; an auto
+  agent falls back to the session model when no route is chosen.
+- **Coordinator distribution models.** The new `allowedModels` setting lists the
+  exact routes the coordinator may assign to auto-mode agents. When the plugin
+  list is empty, the Host `subagent-model-selection` policy is used; when that is
+  empty too, agents inherit the session model.
+- **Model discovery and overrides.** `agent_manager_list_models` exposes the
+  coordinator’s allowed routes, and `agent_manager_spawn` accepts optional
+  `model_provider` / `model` fields for auto-mode definitions. `/agent-manager
+  run --model <provider>/<model>` supports the same choice from chat.
+- **Settings UI.** The agent form has a model-mode selector plus provider and
+  model lists for fixed agents; the Settings page gains a distribution-model
+  picker backed by the live LLM catalog, with provider/model lists for adding
+  routes. Spawned children show their effective model.
+- **Host fallback and validation.** The manager reads the Host
+  `subagent-model-selection` service without requiring it, validates coordinator
+  choices against the effective list, and passes the route through the
+  subagent `agentOptions` seam.
+
 ## [0.2.1] — 2026-10-21
 
 - **Fix: every model-facing tool was rejected by the provider.** Definitions

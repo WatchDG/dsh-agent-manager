@@ -15,6 +15,7 @@ window.__ModuleLoader__.load({
     const OVERVIEW_PATH = '/agents/overview'
     const SESSIONS_PATH = '/agents/sessions'
     const LIST_PATH = '/agents/list'
+    const MODELS_PATH = '/agents/models'
     const SAVE_PATH = '/agents/save'
     const DELETE_AGENT_PATH = '/agents/delete-agent'
     const SPAWN_PATH = '/agents/spawn'
@@ -44,6 +45,42 @@ window.__ModuleLoader__.load({
       providerHint: 'spawn starts a fresh context; fork inherits the session’s completed turns.',
       spawnOption: 'Spawn (fresh context)',
       forkOption: 'Fork (inherit the chat)',
+      modelModeLabel: 'Model',
+      modelModeHint:
+        'inherit uses the spawning session’s model; auto lets the coordinator choose a distribution model; fixed always uses the exact route below.',
+      modelInheritOption: 'Inherit from the session',
+      modelAutoOption: 'Coordinator chooses',
+      modelFixedOption: 'Fixed model',
+      modelProviderLabel: 'Model provider',
+      modelNameLabel: 'Model id',
+      modelProviderHint: 'Choose the LLM provider from the discovered list.',
+      modelNameHint: 'Choose one of the models advertised by the selected provider.',
+      modelFixedHint: 'The agent always runs with this provider/model; the coordinator cannot override it.',
+      modelAutoHint: 'The coordinator may choose from the distribution models; without a choice the session model is used.',
+      modelInheritHint: 'The child inherits the model of the session that spawns it.',
+      modelUnset: 'not set',
+      distributionTitle: 'Distribution models',
+      distributionHint:
+        'Exact models the coordinator may assign to auto-mode agents. Leave this list empty to use the Host Subagent model-selection policy; when that is empty too, agents inherit the session model.',
+      distributionSourceConfig: 'This list overrides the Host Subagent model-selection policy.',
+      distributionSourceHost: 'This plugin list is empty; the Host Subagent model-selection policy is used.',
+      distributionSourceSession: 'No distribution models are configured; agents use the session model.',
+      distributionUnavailable: 'Saved but not advertised right now',
+      distributionEmpty: 'No models discovered. Configure an LLM provider in DSH first.',
+      distributionAdd: 'Add route',
+      distributionLoading: 'Loading models…',
+      distributionLoadFailed: 'Could not load the model catalog.',
+      distributionProviderPlaceholder: 'Select provider',
+      distributionModelPlaceholder: 'Select model',
+      modelNoProviders: 'No LLM providers discovered. Configure a model provider in DSH first.',
+      modelNoModelsForProvider: 'This provider advertises no models.',
+      spawnModelLabel: 'Model for this run',
+      spawnModelHint:
+        'Honored only for auto-mode agents and only for a configured distribution model. Fixed agents use their own model; inherit agents use the session model.',
+      spawnModelSession: 'Use the session model',
+      spawnModelFixed: 'Fixed model',
+      spawnModelInherit: 'Uses the session model',
+      modelCatalogFailed: 'Model suggestions could not be loaded; type the ids manually.',
       saveButton: 'Save agent',
       deleteButton: 'Delete',
       confirmDelete: 'Click again to delete',
@@ -108,6 +145,42 @@ window.__ModuleLoader__.load({
       providerHint: 'spawn начинает с чистого контекста; fork наследует завершённые ходы сессии.',
       spawnOption: 'Spawn (чистый контекст)',
       forkOption: 'Fork (унаследовать чат)',
+      modelModeLabel: 'Модель',
+      modelModeHint:
+        'inherit использует модель сессии, из которой запускают агента; auto позволяет координатору выбрать модель из списка распределения; fixed всегда использует указанный маршрут.',
+      modelInheritOption: 'Наследовать от сессии',
+      modelAutoOption: 'Выбирает координатор',
+      modelFixedOption: 'Фиксированная модель',
+      modelProviderLabel: 'Провайдер модели',
+      modelNameLabel: 'Id модели',
+      modelProviderHint: 'Выберите LLM-провайдера из обнаруженного списка.',
+      modelNameHint: 'Выберите одну из моделей, которую объявляет выбранный провайдер.',
+      modelFixedHint: 'Агент всегда работает с этой моделью; координатор не может её переопределить.',
+      modelAutoHint: 'Координатор может выбрать модель из списка распределения; без выбора используется модель сессии.',
+      modelInheritHint: 'Ребёнок наследует модель сессии, из которой его запускают.',
+      modelUnset: 'не задана',
+      distributionTitle: 'Модели для распределения',
+      distributionHint:
+        'Точные модели, которые координатор может назначать агентам в режиме auto. Оставьте список пустым, чтобы использовать политику выбора моделей субагентов Host; если она тоже пуста, агенты наследуют модель сессии.',
+      distributionSourceConfig: 'Этот список переопределяет политику выбора моделей субагентов Host.',
+      distributionSourceHost: 'Список плагина пуст; используется политика выбора моделей субагентов Host.',
+      distributionSourceSession: 'Модели для распределения не заданы; агенты используют модель сессии.',
+      distributionUnavailable: 'Сохранена, но сейчас не объявляется провайдером',
+      distributionEmpty: 'Модели не обнаружены. Сначала настройте LLM-провайдера в DSH.',
+      distributionAdd: 'Добавить маршрут',
+      distributionLoading: 'Загружаю модели…',
+      distributionLoadFailed: 'Не удалось загрузить каталог моделей.',
+      distributionProviderPlaceholder: 'Выберите провайдера',
+      distributionModelPlaceholder: 'Выберите модель',
+      modelNoProviders: 'LLM-провайдеры не обнаружены. Сначала настройте провайдера моделей в DSH.',
+      modelNoModelsForProvider: 'Этот провайдер не объявляет моделей.',
+      spawnModelLabel: 'Модель для этого запуска',
+      spawnModelHint:
+        'Учитывается только для агентов в режиме auto и только для модели из списка распределения. Агенты fixed используют свою модель; агенты inherit — модель сессии.',
+      spawnModelSession: 'Использовать модель сессии',
+      spawnModelFixed: 'Фиксированная модель',
+      spawnModelInherit: 'Использует модель сессии',
+      modelCatalogFailed: 'Подсказки моделей не загрузились; введите id вручную.',
       saveButton: 'Сохранить агента',
       deleteButton: 'Удалить',
       confirmDelete: 'Нажмите ещё раз для удаления',
@@ -188,6 +261,15 @@ window.__ModuleLoader__.load({
 .am-formCard{display:flex;flex-direction:column;gap:12px;padding:12px;border:.5px solid var(--dsw-alias-border-l1);border-radius:8px;background:var(--dsw-alias-bg-layer-1)}
 .am-send{display:flex;flex-direction:column;gap:6px}
 .am-empty{color:var(--dsw-alias-label-secondary);font-size:12px;line-height:18px;padding:4px 0}
+.am-modelList{display:flex;flex-direction:column;gap:2px;max-height:240px;overflow:auto;padding:8px 10px;border:.5px solid var(--dsw-alias-border-l2);border-radius:8px;background:var(--dsw-alias-bg-layer-2)}
+.am-modelOption{display:flex;align-items:flex-start;gap:8px;padding:3px 0;font-size:12px;line-height:17px}
+.am-modelOption input{margin-top:2px;flex:none}
+.am-modelOptionText{min-width:0;display:flex;flex-direction:column;gap:1px}
+.am-modelOptionName{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.am-modelOptionMeta{color:var(--dsw-alias-label-secondary);font-size:11px;line-height:15px;overflow-wrap:anywhere}
+.am-modelAdd{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.am-modelAdd .am-input{flex:1;min-width:130px}
+.am-modelSource{font-size:12px;line-height:18px;color:var(--dsw-alias-label-secondary)}
 `
 
     /** Fetch JSON from an authenticated Host route. */
@@ -248,6 +330,61 @@ window.__ModuleLoader__.load({
       })
     }
 
+    /** Stable key for an exact provider/model route. */
+    function routeKey(route) {
+      return `${route.provider}\u0000${route.model}`
+    }
+
+    /** Display one route as provider/model. */
+    function formatRoute(route) {
+      return route ? `${route.provider}/${route.model}` : ''
+    }
+
+    /** Whether two routes name the same provider and model. */
+    function sameRoute(left, right) {
+      return Boolean(left && right && left.provider === right.provider && left.model === right.model)
+    }
+
+    /** Human label for a model mode, tolerant of legacy definitions. */
+    function modelModeKey(mode) {
+      if (mode === 'fixed') return 'modelFixedOption'
+      if (mode === 'auto') return 'modelAutoOption'
+      return 'modelInheritOption'
+    }
+
+    /** Provider select choices from the live catalog and saved routes. */
+    function providerChoices(catalog, current) {
+      const choices = []
+      const seen = new Set()
+      const add = (provider, name, available) => {
+        if (typeof provider !== 'string' || provider.length === 0 || seen.has(provider)) return
+        seen.add(provider)
+        choices.push({ provider, name: name || provider, available: available !== false })
+      }
+      for (const row of catalog.providers ?? []) add(row.provider, row.name, row.available)
+      for (const row of catalog.models ?? []) add(row.provider, row.provider, row.available)
+      for (const row of catalog.allowedModels ?? []) add(row.provider, row.provider, row.available)
+      add(current, current, false)
+      return choices.sort((left, right) => left.provider.localeCompare(right.provider))
+    }
+
+    /** Model select choices for one provider, keeping the current saved value. */
+    function modelChoices(catalog, provider, current) {
+      const choices = []
+      const seen = new Set()
+      const add = (model, name, available) => {
+        if (typeof model !== 'string' || model.length === 0 || seen.has(model)) return
+        seen.add(model)
+        choices.push({ model, name: name || model, available: available !== false })
+      }
+      for (const row of catalog.models ?? []) {
+        if (row.provider !== provider) continue
+        add(row.model, row.name, row.available)
+      }
+      add(current, current, false)
+      return choices.sort((left, right) => left.model.localeCompare(right.model))
+    }
+
     /** One labeled form row. */
     function Field(props) {
       const { id, label, hint, children } = props
@@ -257,6 +394,263 @@ window.__ModuleLoader__.load({
         h('label', { className: 'am-label', htmlFor: id }, label),
         children,
         hint ? h('div', { className: 'am-hint', id: `${id}-hint` }, hint) : null,
+      )
+    }
+
+    /**
+     * Settings block that chooses the exact models the coordinator may hand
+     * to auto-mode agents. The Host Subagent model-selection policy is the
+     * fallback when this plugin list is empty.
+     */
+    function ModelPolicyBlock(props) {
+      const { t, onChange, disabled } = props
+      const [catalog, setCatalog] = React.useState({
+        status: 'loading',
+        providers: [],
+        models: [],
+        allowedModels: [],
+        source: 'session',
+      })
+      const [selected, setSelected] = React.useState(null)
+      const [draft, setDraft] = React.useState({ provider: '', model: '' })
+      const [notice, setNotice] = React.useState('')
+
+      React.useEffect(() => {
+        let alive = true
+        getJson(MODELS_PATH, 'scope=all')
+          .then((response) => {
+            if (!alive) return
+            const data = response.data ?? {}
+            setCatalog({
+              status: 'ready',
+              providers: Array.isArray(data.providers) ? data.providers : [],
+              models: Array.isArray(data.models) ? data.models : [],
+              allowedModels: Array.isArray(data.allowedModels) ? data.allowedModels : [],
+              source: typeof data.source === 'string' ? data.source : 'session',
+            })
+            setSelected(null)
+          })
+          .catch(() => {
+            if (!alive) return
+            setCatalog({
+              status: 'failed',
+              providers: [],
+              models: [],
+              allowedModels: [],
+              source: 'session',
+            })
+          })
+        return () => {
+          alive = false
+        }
+      }, [])
+
+      const allowed = selected ?? catalog.allowedModels
+      const providerOptions = providerChoices(catalog, draft.provider)
+      const modelOptions = modelChoices(catalog, draft.provider, draft.model)
+      const sourceKey =
+        catalog.source === 'config'
+          ? 'distributionSourceConfig'
+          : catalog.source === 'host'
+            ? 'distributionSourceHost'
+            : 'distributionSourceSession'
+
+      const apply = (next) => {
+        const previous = allowed
+        setSelected(next)
+        setNotice('')
+        try {
+          Promise.resolve(onChange(next))
+            .then((accepted) => {
+              if (!accepted) {
+                setSelected(previous)
+                setNotice(t('saveFailed'))
+              }
+            })
+            .catch(() => {
+              setSelected(previous)
+              setNotice(t('saveFailed'))
+            })
+        } catch {
+          setSelected(previous)
+          setNotice(t('saveFailed'))
+        }
+      }
+
+      const toggle = (route) => {
+        if (disabled) return
+        const exists = allowed.some((candidate) => sameRoute(candidate, route))
+        apply(
+          exists
+            ? allowed.filter((candidate) => !sameRoute(candidate, route))
+            : [...allowed, { provider: route.provider, model: route.model }],
+        )
+      }
+
+      const addDraft = () => {
+        const provider = draft.provider.trim()
+        const model = draft.model.trim()
+        if (disabled || provider.length === 0 || model.length === 0) return
+        if (!allowed.some((candidate) => candidate.provider === provider && candidate.model === model)) {
+          apply([...allowed, { provider, model }])
+        }
+        setDraft({ provider, model: '' })
+      }
+
+      const routes = []
+      const seen = new Set()
+      for (const model of catalog.models) {
+        const key = routeKey(model)
+        if (seen.has(key)) continue
+        seen.add(key)
+        routes.push({
+          provider: model.provider,
+          model: model.model,
+          name: model.name || model.model,
+          description: model.description,
+          available: model.available !== false,
+        })
+      }
+      for (const route of allowed) {
+        const key = routeKey(route)
+        if (seen.has(key)) continue
+        seen.add(key)
+        routes.push({
+          provider: route.provider,
+          model: route.model,
+          name: route.model,
+          available: false,
+        })
+      }
+
+      const list =
+        catalog.status === 'loading'
+          ? h('div', { className: 'am-status' }, t('distributionLoading'))
+          : catalog.status === 'failed'
+            ? h('div', { className: 'am-error', role: 'alert' }, t('distributionLoadFailed'))
+            : routes.length === 0
+              ? h('div', { className: 'am-empty' }, t('distributionEmpty'))
+              : h(
+                  'div',
+                  { className: 'am-modelList' },
+                  routes.map((route) => {
+                    const checked = allowed.some((candidate) => sameRoute(candidate, route))
+                    return h(
+                      'label',
+                      { className: 'am-modelOption', key: routeKey(route) },
+                      h('input', {
+                        type: 'checkbox',
+                        checked,
+                        disabled,
+                        onChange: () => toggle(route),
+                      }),
+                      h(
+                        'span',
+                        { className: 'am-modelOptionText' },
+                        h(
+                          'span',
+                          { className: 'am-modelOptionName' },
+                          `${formatRoute(route)}${route.name && route.name !== route.model ? ` — ${route.name}` : ''}`,
+                        ),
+                        route.available === false || route.description
+                          ? h(
+                              'span',
+                              { className: 'am-modelOptionMeta' },
+                              [
+                                route.available === false ? t('distributionUnavailable') : '',
+                                route.description ?? '',
+                              ]
+                                .filter(Boolean)
+                                .join(' · '),
+                            )
+                          : null,
+                      ),
+                    )
+                  }),
+                )
+
+      return h(
+        'div',
+        { className: 'am-row' },
+        h('div', { className: 'am-label' }, t('distributionTitle')),
+        h('div', { className: 'am-hint' }, t('distributionHint')),
+        catalog.status === 'ready' && selected === null
+          ? h('div', { className: 'am-modelSource' }, t(sourceKey))
+          : null,
+        list,
+        catalog.status !== 'ready'
+          ? null
+          : providerOptions.length === 0
+            ? h('div', { className: 'am-empty' }, t('modelNoProviders'))
+            : h(
+              React.Fragment,
+              null,
+              h(
+                'div',
+                { className: 'am-modelAdd' },
+                h(
+                  'select',
+                  {
+                    className: 'am-select',
+                    value: draft.provider,
+                    disabled,
+                    onChange: (event) =>
+                      setDraft({ provider: event.target.value, model: '' }),
+                  },
+                  h('option', { value: '', disabled: true }, t('distributionProviderPlaceholder')),
+                  providerOptions.map((option) =>
+                    h(
+                      'option',
+                      { key: option.provider, value: option.provider },
+                      `${option.provider}${
+                        option.name !== option.provider ? ` — ${option.name}` : ''
+                      }${option.available === false ? ` (${t('distributionUnavailable')})` : ''}`,
+                    ),
+                  ),
+                ),
+                h(
+                  'select',
+                  {
+                    className: 'am-select',
+                    value: draft.model,
+                    disabled: disabled || draft.provider.length === 0,
+                    onChange: (event) =>
+                      setDraft((previous) => ({ ...previous, model: event.target.value })),
+                  },
+                  h('option', { value: '', disabled: true }, t('distributionModelPlaceholder')),
+                  modelOptions.map((option) =>
+                    h(
+                      'option',
+                      { key: option.model, value: option.model },
+                      `${option.name}${
+                        option.name !== option.model ? ` — ${option.model}` : ''
+                      }${option.available === false ? ` (${t('distributionUnavailable')})` : ''}`,
+                    ),
+                  ),
+                ),
+                h(
+                  'button',
+                  {
+                    type: 'button',
+                    className: 'am-button',
+                    disabled:
+                      disabled ||
+                      draft.provider.length === 0 ||
+                      draft.model.length === 0 ||
+                      allowed.some(
+                        (route) =>
+                          route.provider === draft.provider && route.model === draft.model,
+                      ),
+                    onClick: addDraft,
+                  },
+                  t('distributionAdd'),
+                ),
+              ),
+              draft.provider.length > 0 && modelOptions.length === 0
+                ? h('div', { className: 'am-status' }, t('modelNoModelsForProvider'))
+                : null,
+            ),
+        notice ? h('div', { className: 'am-error', role: 'alert' }, notice) : null,
       )
     }
 
@@ -358,7 +752,7 @@ window.__ModuleLoader__.load({
                           h(
                             'div',
                             { className: 'am-agentMeta' },
-                            `${t(agent.active ? 'running' : 'inactive')} · ${t(`mode${agent.mode[0].toUpperCase()}${agent.mode.slice(1)}`)}`,
+                            `${t(agent.active ? 'running' : 'inactive')} · ${t(`mode${agent.mode[0].toUpperCase()}${agent.mode.slice(1)}`)}${agent.model ? ` · ${agent.model}` : ''}`,
                           ),
                           h(
                             'div',
@@ -457,15 +851,36 @@ window.__ModuleLoader__.load({
       const [selectedSession, setSelectedSession] = React.useState('')
       const [creating, setCreating] = React.useState(false)
       const [editingId, setEditingId] = React.useState(null)
-      const [form, setForm] = React.useState({ id: null, name: '', description: '', prompt: '', provider: 'spawn' })
+      const [form, setForm] = React.useState({
+        id: null,
+        name: '',
+        description: '',
+        prompt: '',
+        provider: 'spawn',
+        modelMode: 'inherit',
+        modelProvider: '',
+        modelName: '',
+      })
       const [saving, setSaving] = React.useState(false)
       const [formNotice, setFormNotice] = React.useState('')
       const [confirmDelete, setConfirmDelete] = React.useState(null)
-      const [spawn, setSpawn] = React.useState({ agentId: '', task: '' })
+      const [spawn, setSpawn] = React.useState({
+        agentId: '',
+        task: '',
+        modelProvider: '',
+        modelName: '',
+      })
       const [spawning, setSpawning] = React.useState(false)
       const [spawnNotice, setSpawnNotice] = React.useState('')
       const [overview, setOverview] = React.useState(null)
       const [overviewError, setOverviewError] = React.useState('')
+      const [modelCatalog, setModelCatalog] = React.useState({
+        status: 'loading',
+        providers: [],
+        models: [],
+        allowedModels: [],
+        source: 'session',
+      })
 
       const reloadDefs = React.useCallback(() => {
         getJson(LIST_PATH)
@@ -492,6 +907,26 @@ window.__ModuleLoader__.load({
             setSessions([])
             setSessionsError(error instanceof Error ? error.message : String(error))
           })
+        getJson(MODELS_PATH, 'scope=all')
+          .then((response) => {
+            const data = response.data ?? {}
+            setModelCatalog({
+              status: 'ready',
+              providers: Array.isArray(data.providers) ? data.providers : [],
+              models: Array.isArray(data.models) ? data.models : [],
+              allowedModels: Array.isArray(data.allowedModels) ? data.allowedModels : [],
+              source: typeof data.source === 'string' ? data.source : 'session',
+            })
+          })
+          .catch(() =>
+            setModelCatalog({
+              status: 'failed',
+              providers: [],
+              models: [],
+              allowedModels: [],
+              source: 'session',
+            }),
+          )
       }, [reloadDefs])
 
       React.useEffect(() => {
@@ -523,7 +958,16 @@ window.__ModuleLoader__.load({
         setFormNotice('')
         setEditingId(null)
         setCreating(true)
-        setForm({ id: null, name: '', description: '', prompt: '', provider: 'spawn' })
+        setForm({
+          id: null,
+          name: '',
+          description: '',
+          prompt: '',
+          provider: 'spawn',
+          modelMode: 'inherit',
+          modelProvider: '',
+          modelName: '',
+        })
       }
 
       const openEdit = (agent) => {
@@ -537,6 +981,9 @@ window.__ModuleLoader__.load({
           description: agent.description,
           prompt: agent.prompt,
           provider: agent.provider,
+          modelMode: agent.modelMode ?? 'inherit',
+          modelProvider: agent.modelProvider ?? '',
+          modelName: agent.modelName ?? '',
         })
       }
 
@@ -556,6 +1003,9 @@ window.__ModuleLoader__.load({
           description: form.description,
           prompt: form.prompt,
           provider: form.provider,
+          modelMode: form.modelMode,
+          modelProvider: form.modelMode === 'fixed' ? form.modelProvider : '',
+          modelName: form.modelMode === 'fixed' ? form.modelName : '',
         })
           .then(() => {
             setFormNotice(t('saved'))
@@ -588,10 +1038,17 @@ window.__ModuleLoader__.load({
           session: selectedSession,
           agentId: spawn.agentId,
           task: spawn.task,
+          modelProvider: spawn.modelProvider,
+          modelName: spawn.modelName,
         })
           .then(() => {
             setSpawnNotice(t('spawned'))
-            setSpawn((previous) => ({ ...previous, task: '' }))
+            setSpawn((previous) => ({
+              ...previous,
+              task: '',
+              modelProvider: '',
+              modelName: '',
+            }))
             if (selectedSession) {
               getJson(OVERVIEW_PATH, `session=${encodeURIComponent(selectedSession)}`)
                 .then((response) => setOverview(response.data))
@@ -604,6 +1061,14 @@ window.__ModuleLoader__.load({
 
       const formOpen = creating || editingId !== null
       const formTitle = editingId !== null ? t('editTitle') : t('createTitle')
+      const providerOptions = providerChoices(modelCatalog, form.modelProvider)
+      const formModelOptions = modelChoices(modelCatalog, form.modelProvider, form.modelName)
+      const spawnDefinition = (defs ?? []).find((agent) => agent.id === spawn.agentId) ?? null
+      const distributionModels = modelCatalog.allowedModels
+      const selectedModelValue =
+        spawn.modelProvider && spawn.modelName
+          ? `${spawn.modelProvider}/${spawn.modelName}`
+          : ''
 
       const agentForm = h(
         'div',
@@ -655,6 +1120,132 @@ window.__ModuleLoader__.load({
           ),
         ),
         h(
+          Field,
+          { id: 'am-def-model-mode', label: t('modelModeLabel'), hint: t('modelModeHint') },
+          h(
+            'select',
+            {
+              id: 'am-def-model-mode',
+              className: 'am-select',
+              value: form.modelMode,
+              onChange: (event) => {
+                const modelMode = event.target.value
+                setForm((previous) => ({
+                  ...previous,
+                  modelMode,
+                  ...(modelMode === 'fixed' ? {} : { modelProvider: '', modelName: '' }),
+                }))
+              },
+            },
+            h('option', { value: 'inherit' }, t('modelInheritOption')),
+            h('option', { value: 'auto' }, t('modelAutoOption')),
+            h('option', { value: 'fixed' }, t('modelFixedOption')),
+          ),
+        ),
+        form.modelMode === 'fixed'
+          ? h(
+              React.Fragment,
+              null,
+              modelCatalog.status === 'loading'
+                ? h('div', { className: 'am-status' }, t('distributionLoading'))
+                : providerOptions.length === 0
+                  ? h('div', { className: 'am-empty' }, t('modelNoProviders'))
+                  : h(
+                      React.Fragment,
+                      null,
+                    h(
+                      Field,
+                      {
+                        id: 'am-def-model-provider',
+                        label: t('modelProviderLabel'),
+                        hint: t('modelProviderHint'),
+                      },
+                      h(
+                        'select',
+                        {
+                          id: 'am-def-model-provider',
+                          className: 'am-select',
+                          value: form.modelProvider,
+                          onChange: (event) =>
+                            setForm((previous) => ({
+                              ...previous,
+                              modelProvider: event.target.value,
+                              modelName: '',
+                            })),
+                        },
+                        h(
+                          'option',
+                          { value: '', disabled: true },
+                          t('distributionProviderPlaceholder'),
+                        ),
+                        providerOptions.map((option) =>
+                          h(
+                            'option',
+                            { key: option.provider, value: option.provider },
+                            `${option.provider}${
+                              option.name !== option.provider ? ` — ${option.name}` : ''
+                            }${
+                              option.available === false
+                                ? ` (${t('distributionUnavailable')})`
+                                : ''
+                            }`,
+                          ),
+                        ),
+                      ),
+                    ),
+                    h(
+                      Field,
+                      {
+                        id: 'am-def-model-name',
+                        label: t('modelNameLabel'),
+                        hint: t('modelNameHint'),
+                      },
+                      h(
+                        'select',
+                        {
+                          id: 'am-def-model-name',
+                          className: 'am-select',
+                          value: form.modelName,
+                          disabled: form.modelProvider.length === 0,
+                          onChange: (event) =>
+                            setForm((previous) => ({
+                              ...previous,
+                              modelName: event.target.value,
+                            })),
+                        },
+                        h(
+                          'option',
+                          { value: '', disabled: true },
+                          t('distributionModelPlaceholder'),
+                        ),
+                        formModelOptions.map((option) =>
+                          h(
+                            'option',
+                            { key: option.model, value: option.model },
+                            `${option.name}${
+                              option.name !== option.model ? ` — ${option.model}` : ''
+                            }${
+                              option.available === false
+                                ? ` (${t('distributionUnavailable')})`
+                                : ''
+                            }`,
+                          ),
+                        ),
+                      ),
+                      formModelOptions.length === 0 && form.modelProvider.length > 0
+                        ? h('div', { className: 'am-status' }, t('modelNoModelsForProvider'))
+                        : null,
+                    ),
+                    h('div', { className: 'am-hint' }, t('modelFixedHint')),
+                  ),
+            )
+          : null,
+        form.modelMode === 'auto' ? h('div', { className: 'am-hint' }, t('modelAutoHint')) : null,
+        form.modelMode === 'inherit' ? h('div', { className: 'am-hint' }, t('modelInheritHint')) : null,
+        modelCatalog.status === 'failed'
+          ? h('div', { className: 'am-status' }, t('modelCatalogFailed'))
+          : null,
+        h(
           'div',
           { className: 'am-actions' },
           h(
@@ -662,7 +1253,13 @@ window.__ModuleLoader__.load({
             {
               type: 'button',
               className: 'am-button',
-              disabled: saving || !form.name.trim() || !form.description.trim() || !form.prompt.trim(),
+              disabled:
+                saving ||
+                !form.name.trim() ||
+                !form.description.trim() ||
+                !form.prompt.trim() ||
+                (form.modelMode === 'fixed' &&
+                  (!form.modelProvider.trim() || !form.modelName.trim())),
               onClick: doSave,
             },
             saving ? t('saving') : t('saveButton'),
@@ -717,7 +1314,15 @@ window.__ModuleLoader__.load({
                         h('span', { className: 'am-agentName' }, agent.name),
                       ),
                       agent.description ? h('div', { className: 'am-agentMeta' }, agent.description) : null,
-                      h('div', { className: 'am-agentMeta' }, `[${agent.provider}] · ${agent.id}`),
+                      h(
+                        'div',
+                        { className: 'am-agentMeta' },
+                        `[${agent.provider}] · ${t(modelModeKey(agent.modelMode))}${
+                          agent.modelMode === 'fixed' && agent.modelProvider && agent.modelName
+                            ? ` · ${agent.modelProvider}/${agent.modelName}`
+                            : ''
+                        } · ${agent.id}`,
+                      ),
                       agent.prompt ? h('div', { className: 'am-prompt' }, agent.prompt) : null,
                       h(
                         'div',
@@ -753,12 +1358,63 @@ window.__ModuleLoader__.load({
                   id: 'am-spawn-agent',
                   className: 'am-select',
                   value: spawn.agentId,
-                  onChange: (event) => setSpawn((previous) => ({ ...previous, agentId: event.target.value })),
+                  onChange: (event) =>
+                    setSpawn((previous) => ({
+                      ...previous,
+                      agentId: event.target.value,
+                      modelProvider: '',
+                      modelName: '',
+                    })),
                 },
                 h('option', { value: '', disabled: true }, '—'),
                 defs.map((agent) => h('option', { key: agent.id, value: agent.id }, agent.name)),
               ),
         ),
+        spawnDefinition
+          ? h(
+              Field,
+              { id: 'am-spawn-model', label: t('spawnModelLabel'), hint: t('spawnModelHint') },
+              spawnDefinition.modelMode === 'auto'
+                ? distributionModels.length === 0
+                  ? h('div', { className: 'am-status' }, t('spawnModelSession'))
+                  : h(
+                      'select',
+                      {
+                        id: 'am-spawn-model',
+                        className: 'am-select',
+                        value: selectedModelValue,
+                        onChange: (event) => {
+                          const value = event.target.value
+                          const separator = value.indexOf('/')
+                          setSpawn((previous) => ({
+                            ...previous,
+                            modelProvider: separator > 0 ? value.slice(0, separator) : '',
+                            modelName: separator > 0 ? value.slice(separator + 1) : '',
+                          }))
+                        },
+                      },
+                      h('option', { value: '' }, t('spawnModelSession')),
+                      distributionModels.map((route) =>
+                        h(
+                          'option',
+                          { key: formatRoute(route), value: formatRoute(route) },
+                          `${formatRoute(route)}${route.name && route.name !== route.model ? ` — ${route.name}` : ''}`,
+                        ),
+                      ),
+                    )
+                : h(
+                    'div',
+                    { className: 'am-status' },
+                    spawnDefinition.modelMode === 'fixed'
+                      ? `${t('spawnModelFixed')}: ${
+                          spawnDefinition.modelProvider && spawnDefinition.modelName
+                            ? `${spawnDefinition.modelProvider}/${spawnDefinition.modelName}`
+                            : t('modelUnset')
+                        }`
+                      : t('spawnModelInherit'),
+                  ),
+            )
+          : null,
         h(
           Field,
           { id: 'am-spawn-session', label: t('sessionLabel') },
@@ -840,7 +1496,7 @@ window.__ModuleLoader__.load({
                         h(
                           'div',
                           { className: 'am-agentMeta' },
-                          `${t(agent.active ? 'running' : 'inactive')} · ${t(`mode${agent.mode[0].toUpperCase()}${agent.mode.slice(1)}`)} · ${agent.id}`,
+                          `${t(agent.active ? 'running' : 'inactive')} · ${t(`mode${agent.mode[0].toUpperCase()}${agent.mode.slice(1)}`)}${agent.model ? ` · ${agent.model}` : ''} · ${agent.id}`,
                         ),
                       ),
                     ),
@@ -884,17 +1540,21 @@ window.__ModuleLoader__.load({
       const value = state.value
 
       const write = (field, next) => {
-        if (typeof props.setField !== 'function') return
+        if (typeof props.setField !== 'function') return Promise.resolve(false)
         setFailed(false)
         setSaved(false)
         setPending(field)
-        props
+        return props
           .setField(field, next)
           .then((accepted) => {
             if (accepted) setSaved(true)
             else setFailed(true)
+            return accepted === true
           })
-          .catch(() => setFailed(true))
+          .catch(() => {
+            setFailed(true)
+            return false
+          })
           .finally(() => setPending(''))
       }
 
@@ -921,6 +1581,11 @@ window.__ModuleLoader__.load({
             h('option', { value: 'fork' }, t('forkOption')),
           ),
         ),
+        h(ModelPolicyBlock, {
+          t,
+          disabled,
+          onChange: (routes) => write('allowedModels', routes),
+        }),
         h(
           Field,
           { id: 'am-header-action', label: t('headerActionLabel'), hint: t('headerActionHint') },

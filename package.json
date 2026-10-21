@@ -1,6 +1,6 @@
 {
   "name": "dsh-agent-manager",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "description": "Agent Manager for DeepSeek Harness: persistent agent definitions, spawn-by-task into any session, and live child management from the Web UI or model-facing tools.",

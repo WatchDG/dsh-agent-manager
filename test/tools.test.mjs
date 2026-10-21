@@ -17,7 +17,13 @@ test('buildManagerTools produces the core definitions', () => {
   })
   assert.deepEqual(
     tools.map((tool) => tool.name),
-    ['agent_manager_list', 'agent_manager_spawn', 'agent_manager_message', 'agent_manager_interrupt'],
+    [
+      'agent_manager_list',
+      'agent_manager_spawn',
+      'agent_manager_list_models',
+      'agent_manager_message',
+      'agent_manager_interrupt',
+    ],
   )
   for (const tool of tools) {
     assert.equal(typeof tool.execute, 'function')
@@ -108,10 +114,39 @@ test('agent_manager_spawn maps parameters to the manager facade', async () => {
     settings: { maxList: () => 50, memberProvider: () => 'fork' },
   })
   const spawn = tools.find((tool) => tool.name === 'agent_manager_spawn')
-  const value = await spawn.execute({ agent: 'reviewer', task: 't' }, exec)
+  const value = await spawn.execute(
+    { agent: 'reviewer', task: 't', model_provider: 'p', model: 'm' },
+    exec,
+  )
   assert.equal(calls[0].sessionId, agent.id)
   assert.equal(calls[0].agentId, 'reviewer')
+  assert.equal(calls[0].modelProvider, 'p')
+  assert.equal(calls[0].modelName, 'm')
   assert.equal(value.childId, 'child-1')
+})
+
+test('agent_manager_list_models delegates to the facade for this session', async () => {
+  const calls = []
+  const tools = buildManagerTools({
+    manager: {
+      listModels: async (request) => {
+        calls.push(request)
+        return {
+          available: true,
+          source: 'config',
+          providers: [{ provider: 'p', name: 'Provider P', available: true }],
+          allowedModels: [{ provider: 'p', model: 'm', name: 'M', available: true }],
+          models: [],
+          sessionModel: null,
+        }
+      },
+    },
+    settings: { maxList: () => 50, memberProvider: () => 'spawn' },
+  })
+  const list = tools.find((tool) => tool.name === 'agent_manager_list_models')
+  const value = await list.execute({}, exec)
+  assert.deepEqual(calls, [{ sessionId: agent.id, scope: 'allowed' }])
+  assert.equal(value.allowedModels[0].provider, 'p')
 })
 
 test('agent_manager_message and interrupt pass the session and target', async () => {

@@ -19,10 +19,27 @@ test('parseCommand handles empty, run, session flag, and usage', () => {
     task: 'Draft',
     session: 'session-42',
   })
+  assert.deepEqual(parseCommand('run --model openai/gpt-5 reviewer | Review'), {
+    kind: 'run',
+    agent: 'reviewer',
+    task: 'Review',
+    modelProvider: 'openai',
+    modelName: 'gpt-5',
+  })
+  assert.deepEqual(parseCommand('run --session=session-42 --model=openai/gpt-5 writer | Draft'), {
+    kind: 'run',
+    agent: 'writer',
+    task: 'Draft',
+    session: 'session-42',
+    modelProvider: 'openai',
+    modelName: 'gpt-5',
+  })
   assert.equal(parseCommand('run reviewer').kind, 'usage')
   assert.equal(parseCommand('run |').kind, 'usage')
   assert.equal(parseCommand('create x | y').kind, 'usage')
   assert.equal(parseCommand('run --session').kind, 'usage')
+  assert.equal(parseCommand('run --model openai writer | Draft').kind, 'usage')
+  assert.equal(parseCommand('run --model= writer | Draft').kind, 'usage')
 })
 
 test('renderStatus lists definitions and spawned children', () => {
@@ -34,9 +51,28 @@ test('renderStatus lists definitions and spawned children', () => {
     team: null,
   })
   assert.match(text, /Defined agents: 1/)
-  assert.match(text, /reviewer \[spawn\] — Reviews PRs/)
+  assert.match(text, /reviewer \[spawn, model: inherit\] — Reviews PRs/)
   assert.match(text, /Spawned children: 1/)
   assert.match(text, /reviewer \[running, continuable\] c1/)
+
+  const fixed = renderStatus({
+    definitions: [
+      {
+        name: 'pinned',
+        provider: 'spawn',
+        description: 'Pinned',
+        modelMode: 'fixed',
+        modelProvider: 'openai',
+        modelName: 'gpt-5',
+      },
+    ],
+    agents: [{ id: 'c2', label: 'pinned', mode: 'continuable', active: false, model: 'openai/gpt-5' }],
+    total: 1,
+    truncated: false,
+    team: null,
+  })
+  assert.match(fixed, /pinned \[spawn, model: openai\/gpt-5\]/)
+  assert.match(fixed, /pinned \[inactive, continuable, openai\/gpt-5\] c2/)
 })
 
 test('executeCommand shows status for empty input', async () => {
