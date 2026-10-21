@@ -1,0 +1,13 @@
+# Agent Manager for DeepSeek Harness.
+# Override this row in the profile's own patch layer to tune behavior, e.g.:
+#
+#   - id: agent-manager
+#     config:
+#       memberProvider: fork       # spawn (default) | fork
+#       maxList: 50
+#       headerAction: true         # conversation-header "Agents" action
+#       autoRefreshMs: 5000
+#       toolsEnabled: true         # register the agent_manager_* tools
+- insert:
+    - id: agent-manager
+      name: dsh-agent-manager

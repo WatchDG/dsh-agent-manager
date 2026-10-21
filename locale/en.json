@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Agent Manager",
+    "description": "Create and manage sub-agents for a session: continuable agents with an overview panel, direct messaging, interrupts, and agent_manager_* tools, with optional Agent Teams board integration."
+  }
+}
