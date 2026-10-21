@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.1] — 2026-10-21
+
+- **Settings → Agents** now includes an agent creation/management block: pick
+  a live session (new `GET /agents/sessions` route), enter name/description/
+  prompt, create the agent, and see that session's managed agents. The same
+  manager facade powers the header panel, tools, and command.
+- Documentation updated to describe creation from Settings.
+
 ## [0.1.0] — 2026-10-21
 
 Initial release.

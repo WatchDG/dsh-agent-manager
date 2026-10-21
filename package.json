@@ -1,6 +1,6 @@
 {
   "name": "dsh-agent-manager",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "Agent Manager for DeepSeek Harness: create, list, message, and interrupt sub-agents from the Web UI or with model-facing tools.",

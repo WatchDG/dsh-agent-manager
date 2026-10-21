@@ -13,6 +13,7 @@ window.__ModuleLoader__.load({
 
     /** Authenticated Host routes registered by lib/plugin.js. */
     const OVERVIEW_PATH = '/agents/overview'
+    const SESSIONS_PATH = '/agents/sessions'
     const CREATE_PATH = '/agents/create'
     const MESSAGE_PATH = '/agents/message'
     const INTERRUPT_PATH = '/agents/interrupt'
@@ -71,6 +72,9 @@ window.__ModuleLoader__.load({
       headerActionHint: 'Show the “Agents” action in an open conversation header.',
       refreshLabel: 'Auto-refresh (ms)',
       refreshHint: 'Panel refresh interval, from 1000 through 60000 ms.',
+      sessionsLabel: 'Session',
+      sessionsHint: 'The agent will be created under this live session.',
+      noSessions: 'No live sessions available — open one first.',
     }
 
     /** Russian copy. */
@@ -127,6 +131,9 @@ window.__ModuleLoader__.load({
       headerActionHint: 'Показывать кнопку «Агенты» в шапке открытой беседы.',
       refreshLabel: 'Автообновление (мс)',
       refreshHint: 'Интервал обновления панели, от 1000 до 60000 мс.',
+      sessionsLabel: 'Сессия',
+      sessionsHint: 'Агент будет создан под этой живой сессией.',
+      noSessions: 'Нет живых сессий — сначала откройте одну.',
     }
 
     /** Panel styles; theme tokens only, so light/dark follows the host theme. */
@@ -483,6 +490,200 @@ window.__ModuleLoader__.load({
       )
     }
 
+    /**
+     * The Settings → Agents management block: pick a live session, create an
+     * agent under it with its own prompt, and see the session's managed
+     * agents. This is the same manager facade the header panel uses.
+     */
+    function ManageBlock(props) {
+      const t = props.t
+      const [sessions, setSessions] = React.useState(null)
+      const [selected, setSelected] = React.useState('')
+      const [overview, setOverview] = React.useState(null)
+      const [form, setForm] = React.useState({ name: '', description: '', prompt: '', provider: 'spawn' })
+      const [busy, setBusy] = React.useState(false)
+      const [notice, setNotice] = React.useState('')
+
+      React.useEffect(() => {
+        let alive = true
+        getJson(SESSIONS_PATH)
+          .then((response) => {
+            if (!alive) return
+            if (!response.ok) throw new Error(response.error ?? 'sessions failed')
+            const list = response.data.sessions ?? []
+            setSessions(list)
+            if (list.length > 0) setSelected((current) => current || list[0].id)
+          })
+          .catch(() => {
+            if (alive) setSessions([])
+          })
+        return () => {
+          alive = false
+        }
+      }, [])
+
+      React.useEffect(() => {
+        if (!selected) {
+          setOverview(null)
+          return
+        }
+        let alive = true
+        getJson(OVERVIEW_PATH, `session=${encodeURIComponent(selected)}`)
+          .then((response) => {
+            if (alive && response.ok) setOverview(response.data)
+          })
+          .catch(() => {
+            if (alive) setOverview(null)
+          })
+        return () => {
+          alive = false
+        }
+      }, [selected])
+
+      const doCreate = () => {
+        if (busy || !selected) return
+        setBusy(true)
+        setNotice('')
+        postJson(CREATE_PATH, { session: selected, ...form })
+          .then((response) => {
+            if (!response.ok) throw new Error(response.error ?? 'create failed')
+            setNotice(t('created'))
+            setForm({ name: '', description: '', prompt: '', provider: 'spawn' })
+            return getJson(OVERVIEW_PATH, `session=${encodeURIComponent(selected)}`)
+          })
+          .then((response) => {
+            if (response && response.ok) setOverview(response.data)
+          })
+          .catch(() => setNotice(t('createFailed')))
+          .finally(() => setBusy(false))
+      }
+
+      return h(
+        'div',
+        { className: 'am-management', style: { marginTop: 24 } },
+        h('h3', { className: 'am-sub' }, t('createTitle')),
+        h(
+          Field,
+          { id: 'am-session', label: t('sessionsLabel'), hint: t('sessionsHint') },
+          sessions === null
+            ? h('div', { className: 'am-status' }, t('loading'))
+            : sessions.length === 0
+              ? h('div', { className: 'am-status' }, t('noSessions'))
+              : h(
+                  'select',
+                  {
+                    id: 'am-session',
+                    className: 'am-select',
+                    value: selected,
+                    onChange: (event) => setSelected(event.target.value),
+                  },
+                  sessions.map((session) =>
+                    h('option', { key: session.id, value: session.id }, `${session.id}${session.cwd ? ` · ${session.cwd}` : ''}`),
+                  ),
+                ),
+        ),
+        h(
+          Field,
+          { id: 'am-mg-name', label: t('nameLabel'), hint: t('nameHint') },
+          h('input', {
+            id: 'am-mg-name',
+            className: 'am-input',
+            value: form.name,
+            onChange: (event) => setForm((previous) => ({ ...previous, name: event.target.value })),
+          }),
+        ),
+        h(
+          Field,
+          { id: 'am-mg-desc', label: t('descLabel'), hint: t('descHint') },
+          h('input', {
+            id: 'am-mg-desc',
+            className: 'am-input',
+            value: form.description,
+            onChange: (event) => setForm((previous) => ({ ...previous, description: event.target.value })),
+          }),
+        ),
+        h(
+          Field,
+          { id: 'am-mg-prompt', label: t('promptLabel'), hint: t('promptHint') },
+          h('textarea', {
+            id: 'am-mg-prompt',
+            className: 'am-textarea',
+            value: form.prompt,
+            onChange: (event) => setForm((previous) => ({ ...previous, prompt: event.target.value })),
+          }),
+        ),
+        h(
+          Field,
+          { id: 'am-mg-provider', label: t('providerLabel'), hint: t('providerHint') },
+          h(
+            'select',
+            {
+              id: 'am-mg-provider',
+              className: 'am-select',
+              value: form.provider,
+              onChange: (event) => setForm((previous) => ({ ...previous, provider: event.target.value })),
+            },
+            h('option', { value: 'spawn' }, t('spawnOption')),
+            h('option', { value: 'fork' }, t('forkOption')),
+          ),
+        ),
+        h(
+          'div',
+          { className: 'am-actions' },
+          h(
+            'button',
+            {
+              type: 'button',
+              className: 'am-button',
+              disabled: busy || !selected || !form.name.trim() || !form.description.trim() || !form.prompt.trim(),
+              onClick: doCreate,
+            },
+            busy ? t('creating') : t('createButton'),
+          ),
+        ),
+        notice
+          ? h(
+              'div',
+              {
+                className: notice === t('createFailed') ? 'am-error' : 'am-status',
+                role: notice === t('createFailed') ? 'alert' : 'status',
+              },
+              notice,
+            )
+          : null,
+        selected && overview
+          ? h(
+              'div',
+              { style: { marginTop: 20 } },
+              h('h3', { className: 'am-sub' }, `${t('members')} · ${overview.total}`),
+              overview.agents.length === 0
+                ? h('div', { className: 'am-empty' }, t('empty'))
+                : h(
+                    'div',
+                    { className: 'am-list' },
+                    overview.agents.map((agent) =>
+                      h(
+                        'div',
+                        { className: 'am-agent', key: agent.id },
+                        h(
+                          'div',
+                          { className: 'am-agentHead' },
+                          h('span', { className: `am-dot ${agent.active ? 'running' : 'inactive'}` }),
+                          h('span', { className: 'am-agentName' }, agent.label ?? agent.id),
+                        ),
+                        h(
+                          'div',
+                          { className: 'am-agentMeta' },
+                          `${t(agent.active ? 'running' : 'inactive')} · ${t(`mode${agent.mode[0].toUpperCase()}${agent.mode.slice(1)}`)} · ${agent.id}`,
+                        ),
+                      ),
+                    ),
+                  ),
+            )
+          : null,
+      )
+    }
+
     /** The Settings → Agents section. */
     function Section(props) {
       const t = typeof props.t === 'function' ? props.t : (key) => en[key] ?? key
@@ -586,6 +787,7 @@ window.__ModuleLoader__.load({
             },
           }),
         ),
+        h(ManageBlock, { t }),
         failed
           ? h('div', { className: 'am-error', role: 'alert' }, t('createFailed'))
           : pending !== ''

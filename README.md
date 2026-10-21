@@ -30,7 +30,9 @@ for free.
   Teams runtime is present. One operation, same behavior as the UI.
 - **Command** — `/agent-manager` for a text overview and quick creation.
 - **Settings page** — Settings → Agents: backend default, list limit, header
-  action visibility, auto-refresh interval, tool registration toggle.
+  action visibility, auto-refresh interval, tool registration toggle — plus
+  an **agent creation/management block**: pick a live session, enter the new
+  agent's name/description/prompt, and see the session's managed agents.
 - **Optional Agent Teams integration** — when `ctx.agentTeams` is mounted, the
   overview includes roster members (lead/teammate, status, model) and shared
   tasks; teammate names become valid message/interrupt targets from the Lead.
@@ -141,8 +143,9 @@ immediately).
    is enabled.
 2. Open any conversation: the header shows the **Agents** action with the
    plugin's icon. Opening it lists an empty state or existing child agents.
-3. Create an agent from the panel (or with `/agent-manager create …`). It
-   appears in the list with status `running` while its first turn executes.
+3. Create an agent from the panel (or with `/agent-manager create …`, or from
+   **Settings → Agents** for any live session). It appears in the list with
+   status `running` while its first turn executes.
 4. Send a message to an agent; it wakes (or continues) and reports back. Use
    **Interrupt** on a running agent and confirm the turn stops.
 5. `agent_manager_list` returns the same rows as the panel.

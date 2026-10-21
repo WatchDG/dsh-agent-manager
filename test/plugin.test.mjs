@@ -68,6 +68,7 @@ test('mount requests settings and web-server injection', () => {
 test('route paths are stable and exported', () => {
   assert.deepEqual(ROUTES, {
     overview: '/agents/overview',
+    sessions: '/agents/sessions',
     create: '/agents/create',
     message: '/agents/message',
     interrupt: '/agents/interrupt',
