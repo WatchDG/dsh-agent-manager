@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.1] — 2026-10-21
+
+- **Fix: every model-facing tool was rejected by the provider.** Definitions
+  registered their author-facing parameter descriptors, but the tool registry
+  forwards `parameters` to the model verbatim, so each call failed with
+  `Invalid schema for function 'agent_manager_*': schema must be a JSON Schema
+  of 'type: "object"', got 'type: null'`. `lib/tools.js` now compiles the
+  descriptors into raw JSON Schema — object root, property schemas, and a
+  top-level `required` array — before registration.
+
 ## [0.2.0] — 2026-10-21
 
 - **Persistent agent definitions**: Settings → Agents keeps a durable,

@@ -27,6 +27,46 @@ test('buildManagerTools produces the core definitions', () => {
   }
 })
 
+test('tool parameters are raw JSON Schema with an object root', () => {
+  const tools = [
+    ...buildManagerTools({ manager: {}, settings: { maxList: () => 50, memberProvider: () => 'spawn' } }),
+    ...buildTeamTools({ ctx: { get: (name) => (name === 'agentTeams' ? {} : undefined) } }),
+  ]
+  for (const tool of tools) {
+    const wire = JSON.stringify(tool.parameters)
+    assert.equal(tool.parameters.type, 'object', `${tool.name} must declare an object root`)
+    assert.equal(typeof tool.parameters.properties, 'object', `${tool.name} must declare properties`)
+    assert.ok(!wire.includes('"required":true'), `${tool.name} leaks the author-only required marker`)
+    for (const [name, property] of Object.entries(tool.parameters.properties)) {
+      assert.equal(property.required, undefined, `${tool.name}.${name} keeps an author-only marker`)
+    }
+    for (const name of tool.parameters.required ?? []) {
+      assert.ok(Object.hasOwn(tool.parameters.properties, name), `${tool.name} requires an undeclared property ${name}`)
+    }
+  }
+
+  const interrupt = tools.find((tool) => tool.name === 'agent_manager_interrupt')
+  assert.deepEqual(interrupt.parameters, {
+    type: 'object',
+    properties: {
+      agent_id: { type: 'string', description: 'Direct child session id, or a teammate name when a team is active.' },
+    },
+    required: ['agent_id'],
+  })
+
+  const create = tools.find((tool) => tool.name === 'agent_manager_task_create')
+  assert.deepEqual(create.parameters.required, ['subject', 'description'])
+  assert.deepEqual(create.parameters.properties.blocked_by, {
+    type: 'array',
+    items: { type: 'string' },
+    description: 'Task ids that must complete first.',
+  })
+
+  const update = tools.find((tool) => tool.name === 'agent_manager_task_update')
+  assert.deepEqual(update.parameters.required, ['task_id', 'expected_revision', 'action'])
+  assert.ok(update.parameters.properties.action.enum.includes('claim'))
+})
+
 test('tools request the calling agent', async () => {
   const tools = buildManagerTools({
     manager: {},
